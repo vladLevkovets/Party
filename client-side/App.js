@@ -1,181 +1,353 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, SafeAreaView, View, Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,Button } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
-import Constants from 'expo-constants'
-
+import { useState,useEffect} from 'react';
+import Constants from 'expo-constants';
+ 
 
 
 export default function App() {
-  const [sound, setSound] = React.useState();
-  async function playSound() {
-    console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync( require('./assets/Pink—Get-The-Party-Started.mp3') 
-    );
-    setSound(sound);
+  const [sound, setSound] = useState();
+  const [smoke,setSmoke]= useState()
+  const [pink,setPink]=useState()
+  const [tab,setTab]=useState("left")
+  const [isMuted,setIsMuted]=useState(true)
+  const [event,setEvent]=useState("")
+  const [text,setText]=useState("")
+  const [todos, setTodos] = useState(["a"])
 
+
+  async function playPink() {
+    console.log('Loading Sound');
+    const { pink } = await Audio.Sound.createAsync(require("./assets/Pink—Get-The-Party-Started.mp3"));
+    setPink(pink);
+    pink.setVolumeAsync(0.5)
+    pink.playAsync(true)
+    pink.playFromPositionAsync (9000)
+    setTimeout(() => {
+      pink.playAsync(false)
+    }, 7750);
     console.log('Playing Sound');
-    await sound.playAsync();
+  } 
+ 
+  async function playSmoke() {
+    console.log('Loading Sound');
+    const { sound } = await Audio.Sound.createAsync(require("./assets/Smokie—WhatCanIDo.mp3"));
+    setSound(sound);
+    sound.setVolumeAsync(0.5)
+    // sound.playAsync(true)
+    sound.playFromPositionAsync (9000)
+    setTimeout(() => {
+      
+    }, 7750);
+    console.log('Playing Sound');
+  } 
+
+  async function playHelp() {
+    console.log('Loading Sound');
+    const { sound } = await Audio.Sound.createAsync(require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3"));
+    setSound(sound);
+    sound.setVolumeAsync(0.5)
+    sound.playAsync(true)
+    setTimeout(() => {
+      sound.stopAsync()
+    }, 4050);
+    console.log('Playing Sound');
+  } 
+
+
+
+
+  useEffect(() => {
+    playHelp()
+  }, []);
+
+  const addToList = () =>{
+    console.log(text,todos)
+      const temp = [...todos] 
+      temp.push(text)
+      setTodos([...temp])
+      setText('')
+  }
+  const removeTodo = (idx) => {
+      const temp = [...todos]
+      temp.splice(idx, 1)
+      setTodos([...temp])
   }
 
-  React.useEffect(() => {
-    // playSound()
-  }, []);
+  const showTodos = () => {
+    console.log(todos)
+   return todos.map((todo, idx)=>{
+      return  <View style={styles.box} key={idx}>
+                  <Text
+                    numberOfLines={1} 
+                    style={styles.task} >{todo}
+                  </Text>
+                  <TouchableWithoutFeedback
+                      onPress={( ) => removeTodo(idx)}>
+                     <Text style={styles.delTask}>X</Text>
+                     
+                      </TouchableWithoutFeedback>
+                
+              </View>
+    })
+  }
 
   console.log("test")
   return (
-     
+    
     <SafeAreaView style={styles.container}>
-      <View style={styles.TOP} >
-      <View style={styles.TOPLeftBg} >      
-      <Text style={styles.TOPLeft}></Text>
-      </View>
-      <View style={styles.TABLeftBg} >      
-      <Text style={styles.TABLeft}></Text>
-      </View>
-      <View style={styles.midLeftBg} >      
-      <Text style={styles.midLeft}></Text>
-      </View>
-      <View style={styles.midRightBg} >      
-      <Text style={styles.midRight}></Text>
-      </View>
-      <View style={styles.TABRightBg} >      
-      <Text style={styles.TABRight}></Text>
-      </View>
-      <View style={styles.TOPRightBG} >      
-      <Text style={styles.TOPRight}></Text>
-      </View>
-
-      </View>
-      {/* <View style={styles.part2}><Text style={styles.text}>LETS START MYSELF</Text><Text style={styles.text1}>LETS START MYSELF</Text></View>
-      <Button title="Play Sound" onPress={playSound} />  */}
-     <View style={styles.part3}><Text style={styles.text}>Open up App.js to start working on your app!</Text></View> 
+       <Text style={styles.statusBar}></Text>
+       <SafeAreaView style={styles.top}>
+          
+           <TouchableWithoutFeedback >
+               <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playHelp()}}>My lists</Text>
+           </TouchableWithoutFeedback>
+           
+           <TouchableWithoutFeedback>
+               <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playSmoke()}}>Pending</Text> 
+           </TouchableWithoutFeedback>
+          
+           <TouchableWithoutFeedback>
+               <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playPink()}}>New one</Text>
+          </TouchableWithoutFeedback>
+        </SafeAreaView>  
+      { tab==="left" 
+      ? <View style={styles.left}><View style={styles.text}></View></View>
+      :tab==="mid"
+          ? <View style={styles.mid}><View style={styles.text}></View></View>
+          : <View style={styles.right}>
+                
+                 <View style={styles.text}>
+                    <View style={styles.form}>
+                      <TextInput style={styles.inputEvent} onChangeText={(text)=>setEvent(text)} ></TextInput>
+                          <View style={styles.inputBox}>
+                          <TextInput style={styles.inputTodo} onChangeText={(text)=>setText(text)} ></TextInput>
+                          <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={addToList}>
+                          <Text style={styles.makeTask}>V</Text>
+                          </TouchableWithoutFeedback>
+                          </View>
+                    </View>
+                    <View style={styles.list}>
+                      {showTodos()}
+                    </View>
+                 </View>
+            </View> }
+      
       <StatusBar style="auto" />
     </SafeAreaView>
+          
+        
+     
+      
   );
 }
 
 const styles = StyleSheet.create({
   
   container: {
-    marginTop: Constants.statusBarHeight,
     flex: 1,
-    // backgroundColor: '#0000000',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor:'#ff0099'
   },
-  part1 :{
-    flexDirection: "row",
-    // alignItems: 'center',
-    // justifyContent:"center",
+  statusBar:{
+    flexDirection:"row",
+    flex:0.5,
+    backgroundColor:'#ff00eb',
+  },
+
+  top:{
+    backgroundColor:"#e4ff00",
+    flexDirection:"row",
     flex: 1,
-    // backgroundColor: "#e5090000",
-    width: "100%",
   },
-  part3 :{
-    
-    alignItems: 'center',
-    justifyContent:"center",
+ 
+  left:{
+    paddingHorizontal:"3%",
+    paddingTop:"3%",
+    paddingBottom:"7%",
+    alignItems:'center',
+    justifyContent: 'center',
     flex: 9,
-    // backgroundColor: "#e60900",
-    backgroundColor: "#199100",
-    width: "100%",
-  },
-  text:{
-    backgroundColor: "#e50999",
-
-    color: '#cdf104',
-    fontSize:20,
-    height:"50%",
     width:"100%",
-    padding:"10%"
+    backgroundColor: "#ff0000",
   },
-  TOP:{   
-     flex:1,
-     flexDirection:"row",
-  
+  mid:{
+    paddingHorizontal:"3%",
+    paddingTop:"3%",
+    paddingBottom:"7%",
+    alignItems:'center',
+    justifyContent: 'center',
+    flex: 9,
+    width:"100%",
+    backgroundColor: "#005bff",
   },
-  TOPLeftBg:{
-    backgroundColor: "#e50900",
-    height:"100%",
-    flex:1,
-    
+  right:{
+    paddingHorizontal:"3%",
+    paddingTop:"3%",
+    paddingBottom:"7%",
+    alignItems:'center',
+    justifyContent: 'center',
+    flex: 9,
+    width:"100%",
+    backgroundColor: '#10ff00',
   },
-  TOPLeft:{
-    borderBottomRightRadius:20,
-    backgroundColor: "#e50999",
-    flex:1,
-  },
-  TABLeftBg:{
-    paddingTop:9,
-    backgroundColor: "#e50999",
-    height:"100%",
-    flex:7,
-  },
-  TABLeft:{
-    borderTopLeftRadius:20,
-    borderTopRightRadius:20,
-    backgroundColor: "#e60900",
-    color: '#cdf104',
-    height:"100%",
-    flex:1,
-    
-  },
-  midLeftBg:{
-    backgroundColor: "#e50900",
-    height:"100%",
-    flex:2,
-    
-  },
-  midLeft:{
-    borderBottomLeftRadius:20,
-    backgroundColor: "#e50999",
-    height:"100%",
-    flex:1,
-  },
-  midRightBg:{
-    backgroundColor: "#199100",
-    height:"100%",
-    flex:2,
-    
-  },
-  midRight:{
-    borderBottomRightRadius:20,
-    backgroundColor: "#e50999",
 
-    height:"100%",
-    flex:1,
+  text:{
     
+    textAlign: 'center',
+    borderRadius:20,
+    backgroundColor:'#ff00eb',
+    color: '#cdf104',
+    fontSize:30,
+    height:"100%",
+    width:"100%",
   },
-  TABRightBg:{
-    paddingTop:9, 
-    backgroundColor: "#e50999",
+  form:{
+    paddingHorizontal:'1%',
+    height:"20%",
+    justifyContent: 'space-evenly',
+    borderRadius:20,
+    margin:"2%",
+   backgroundColor:"#e4ff00"
+  },
+  list:{
+    height:"74%",
+   backgroundColor:"#e4ff00",
+   borderRadius:20,
+   margin:"2%",
+  },
+  inputEvent:{
+    paddingLeft:10 ,
+    borderRadius:20,
+    height:"40%",
   
-    height:"100%",
-    flex:7,
-    
+    backgroundColor:"#abb7b9",
   },
-  TABRight:{
+  inputTodo:{
+    width:"90%",
+    paddingLeft:10 ,
+    borderRadius:20,
+    height:40,
+    placeholder:"Task",
+    backgroundColor:"#abb7b9",
+  },
+  inputBox:{
+
+    flexDirection:"row",
+    borderRadius:20,
+    height:40,
+    backgroundColor:"#abb7b9"
+  },
+  box:{
+    flexDirection:"row",
+    paddingLeft:10 ,
+    borderRadius:20,
+    height:40,
+    backgroundColor:"#ff0909",
+  },
+
+  task:{
+    paddingTop:5,
+    fontSize:15,
+    width:"90%",
+    color:"#161515",
+    paddingLeft:3 ,
+    borderRadius:30,
+    height:40,
+    backgroundColor:"#ff0909",
+  },
+   
+ makeTask:{
+  textAlign:'center',
+  marginTop:5,
+  marginRight:5,
+  fontSize:20,
+  width:30,
+  height:30,
+  borderRadius:20,
+  backgroundColor:"green",
+  color:"white"
+ },
+ delTask:{
+  textAlign:'center',
+  marginTop:5,
+  marginRight:5,
+  fontSize:20,
+  width:30,
+  height:30,
+  borderRadius:20,
+  backgroundColor:"black",
+  color:"white"
+},
+
+  tabLeft:{
+    paddingTop:9,
+    color:"#005bff",
+    textAlign:'center',
+    marginLeft:1,
+    marginTop:15,
+    marginRight:-20,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
-    backgroundColor: "#199100",
-    height:"100%",
-    flex:1,
-    
+    backgroundColor: '#ff0000',
+    flex:40,
+    zIndex:0
   },
-  TOPRightBG:{
-    backgroundColor: "#199100",
-    height:"100%",
-    flex:1,
-    
+  tabLeftA:{
+    paddingTop:9,
+    color:"#005bff",
+    textAlign:'center',
+    marginLeft:1,
+    marginTop:15,
+    marginRight:-20,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    backgroundColor: '#ff0000',
+    flex:40,
+    zIndex:2
   },
-  TOPRight:{
-    borderBottomLeftRadius:20,
-    backgroundColor: "#e50999",
-    height:"100%",
-    flex:1,
-    
+  tabMid:{
+    paddingTop:9,
+    color:"#10ff00",
+    textAlign:'center',
+    marginTop:15,
+    marginRight:-20,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    backgroundColor: '#005bff',
+    flex:40,
+    zIndex:1,
   },
+  
+  tabRight:{
+    paddingTop:9,
+    color:"#ff0000",
+    textAlign:'center',
+    marginRight:1,
+    marginTop:15,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    backgroundColor: '#10ff00',
+    flex:40,
+    zIndex:0,
+  },
+  tabRightA:{
+    paddingTop:9,
+    color:"#ff0000",
+    textAlign:'center',
+    marginRight:1,
+    marginTop:15,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    backgroundColor: '#10ff00',
+    flex:40,
+    zIndex:2
+  },
+  
+
 
 
 
