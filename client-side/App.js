@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
 import Constants from 'expo-constants';
+import { getNativeSourceAndFullInitialStatusForLoadAsync } from 'expo-av/build/AV';
 
 
 
@@ -16,17 +17,15 @@ export default function App() {
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
   const [text,setText]=useState("")
-  const [todos, setTodos] = useState(["a"])
-  // const [url,setUrl]=useState(require("./assets/Pink—Get-The-Party-Started.mp3"))
+  const [todos, setTodos] = useState([])
 
   async function playMusic(url,start,stop) {
-    if (music){
-      music.stopAsync()
-      }
+    // if (music){
+    //   music.stopAsync()
+    //   }
     const { sound} = await Audio.Sound.createAsync(url);
     setMusic(sound);
     sound.setVolumeAsync(1)
-    sound.playAsync(true)
     sound.playFromPositionAsync (start)
     setTimeout(() => {
       sound.stopAsync(false)
@@ -34,37 +33,16 @@ export default function App() {
     console.log('Playing Sound');
   } 
  
-  async function playSmoke() {
-    music.stopAsync()
-    console.log('Loading Sound');
-    const { sound} = await Audio.Sound.createAsync(require("./assets/Smokie—WhatCanIDo.mp3"));
-    setMusic(sound);
-    sound.setVolumeAsync(1)
-    
-    sound.playFromPositionAsync (40000)
-    setTimeout(() => {
-      sound.stopAsync()
-    }, 4950);
-    console.log('Playing Sound');
-  } 
-
-  async function playHelp() {
-    if (music){
-    music.stopAsync()
-    }
-    console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync(require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3"));
-    setMusic(sound);
-    sound.setVolumeAsync(0.5)
-    sound.playFromPositionAsync (500)
-    // sound.playAsync(true)
-    setTimeout(() => {
-      sound.stopAsync()
-    }, 4050);
-    console.log('Playing Sound');
+ useEffect(()=>{
+  return music
+      ? () => {
+          music.unloadAsync();
+        }
+      : undefined;
+ },[music])
   
-  } 
 
+  
 
 
 
@@ -134,19 +112,26 @@ export default function App() {
                 
                  <View style={styles.text}>
                     <View style={styles.form}>
-                      <TextInput style={styles.inputEvent} onChangeText={(text)=>setEvent(text)} ></TextInput>
+                      <TextInput style={styles.inputEvent}placeholder= "name of event" onChangeText={(text)=>setEvent(text)} ></TextInput>
                           <View style={styles.inputBox}>
-                          <TextInput style={styles.inputTodo} onChangeText={(text)=>setText(text)} ></TextInput>
+                          <TextInput style={styles.inputTodo} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
                           <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={addToList}>
-                          <Text style={styles.makeTask}>V</Text>
+                          <View style={styles.makeTask} >
+                          {/* <Text style={styles.makeTaskButton}>V</Text> */}
+                          <Image source={require("./assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
+                          </View>
                           </TouchableWithoutFeedback>
                           </View>
                           
                     </View>
+                    
                     <View style={styles.list}>
+                    <ScrollView style={styles.scroll}>
                       {showTodos()}
-                    </View>
+                    </ScrollView> 
 
+                    </View>
+                    
                     
                  </View>
     
@@ -169,13 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor:'#ff0099'
   },
-  contentContainer:{
-    flex:1,
-    width:"100%",
-    height:647,
-    alignItems: 'space-between',
-    justifyContent: 'space-around',
-  },
+
   statusBar:{
     flexDirection:"row",
     height:40,
@@ -232,6 +211,7 @@ const styles = StyleSheet.create({
     width:337,
   },
   form:{
+    borderWidth:1,
     paddingHorizontal:'1%',
     height:"20%",
     justifyContent: 'space-evenly',
@@ -239,39 +219,54 @@ const styles = StyleSheet.create({
     margin:"2%",
    backgroundColor:"#e4ff00"
   },
+  scroll:{
+    keyboardDismissMode:'none', 
+    width:"100%",
+    flex:1,
+    backgroundColor:"#ff00eb",
+    borderRadius:20,
+  },
   list:{
-    height:"74%",
+   borderWidth:1,
+    // borderTopColor:"#e4ff00",
+    height:"70%",
    backgroundColor:"#e4ff00",
    borderRadius:20,
    margin:"2%",
+   marginTop:0,
   },
   inputEvent:{
+
     paddingLeft:10 ,
     borderRadius:20,
     height:"40%",
-  
     backgroundColor:"#abb7b9",
   },
   inputTodo:{
     width:"90%",
     paddingLeft:10 ,
     borderRadius:20,
-    height:40,
+    height:"100%",
     placeholder:"Task",
+    
     backgroundColor:"#abb7b9",
   },
   inputBox:{
-
+  
+    height:"40%",
     flexDirection:"row",
     borderRadius:20,
-    height:40,
+    
     backgroundColor:"#abb7b9"
   },
   box:{
+    marginTop:5,
+    marginHorizontal:3,
     flexDirection:"row",
     paddingLeft:10 ,
     borderRadius:20,
     height:40,
+
     backgroundColor:"#ff0909",
   },
 
@@ -297,8 +292,28 @@ const styles = StyleSheet.create({
   backgroundColor:"green",
   color:"white"
  },
+ buttonPic:{
+  
+  fontSize:15,
+  width:30,
+  height:30,
+  borderRadius:30,
+  
+ },
+ makeTaskButton:{
+  textAlign:'center',
+  justifyContent:'flex-start',
+  margin:5,
+  fontSize:15,
+  width:20,
+  height:20,
+  borderRadius:0,
+  backgroundColor:"blue",
+  color:"white"
+ },
  delTask:{
   textAlign:'center',
+  
   marginTop:5,
   marginRight:5,
   fontSize:20,
