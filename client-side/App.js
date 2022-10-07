@@ -1,66 +1,76 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
 import Constants from 'expo-constants';
- 
+
 
 
 export default function App() {
-  const [sound, setSound] = useState();
-  const [smoke,setSmoke]= useState()
-  const [pink,setPink]=useState()
+  const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
+  const Smoke= require("./assets/Smokie—WhatCanIDo.mp3")
+  const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
+  const [music, setMusic] = useState()
   const [tab,setTab]=useState("left")
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
   const [text,setText]=useState("")
   const [todos, setTodos] = useState(["a"])
+  // const [url,setUrl]=useState(require("./assets/Pink—Get-The-Party-Started.mp3"))
 
-
-  async function playPink() {
-    console.log('Loading Sound');
-    const { pink } = await Audio.Sound.createAsync(require("./assets/Pink—Get-The-Party-Started.mp3"));
-    setPink(pink);
-    pink.setVolumeAsync(0.5)
-    pink.playAsync(true)
-    pink.playFromPositionAsync (9000)
+  async function playMusic(url,start,stop) {
+    if (music){
+      music.stopAsync()
+      }
+    const { sound} = await Audio.Sound.createAsync(url);
+    setMusic(sound);
+    sound.setVolumeAsync(1)
+    sound.playAsync(true)
+    sound.playFromPositionAsync (start)
     setTimeout(() => {
-      pink.playAsync(false)
-    }, 7750);
+      sound.stopAsync(false)
+    }, stop);
     console.log('Playing Sound');
   } 
  
   async function playSmoke() {
+    music.stopAsync()
     console.log('Loading Sound');
-    const { sound } = await Audio.Sound.createAsync(require("./assets/Smokie—WhatCanIDo.mp3"));
-    setSound(sound);
-    sound.setVolumeAsync(0.5)
-    // sound.playAsync(true)
-    sound.playFromPositionAsync (9000)
+    const { sound} = await Audio.Sound.createAsync(require("./assets/Smokie—WhatCanIDo.mp3"));
+    setMusic(sound);
+    sound.setVolumeAsync(1)
+    
+    sound.playFromPositionAsync (40000)
     setTimeout(() => {
-      
-    }, 7750);
+      sound.stopAsync()
+    }, 4950);
     console.log('Playing Sound');
   } 
 
   async function playHelp() {
+    if (music){
+    music.stopAsync()
+    }
     console.log('Loading Sound');
     const { sound } = await Audio.Sound.createAsync(require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3"));
-    setSound(sound);
+    setMusic(sound);
     sound.setVolumeAsync(0.5)
-    sound.playAsync(true)
+    sound.playFromPositionAsync (500)
+    // sound.playAsync(true)
     setTimeout(() => {
       sound.stopAsync()
     }, 4050);
     console.log('Playing Sound');
+  
   } 
 
 
 
 
   useEffect(() => {
-    playHelp()
+    
+    playMusic(Help,500,3600)
   }, []);
 
   const addToList = () =>{
@@ -93,25 +103,28 @@ export default function App() {
               </View>
     })
   }
+  
 
   console.log("test")
   return (
     
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      
        <Text style={styles.statusBar}></Text>
        <SafeAreaView style={styles.top}>
           
            <TouchableWithoutFeedback >
-               <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playHelp()}}>My lists</Text>
+               <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playMusic(Help,500,3550)}}>My lists</Text>
            </TouchableWithoutFeedback>
            
            <TouchableWithoutFeedback>
-               <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playSmoke()}}>Pending</Text> 
+               <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playMusic(Smoke,40000,7000)}}>Pending</Text> 
            </TouchableWithoutFeedback>
           
            <TouchableWithoutFeedback>
-               <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playPink()}}>New one</Text>
+               <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playMusic(Pink,9000,7750)}}>New one</Text>
           </TouchableWithoutFeedback>
+          
         </SafeAreaView>  
       { tab==="left" 
       ? <View style={styles.left}><View style={styles.text}></View></View>
@@ -128,17 +141,21 @@ export default function App() {
                           <Text style={styles.makeTask}>V</Text>
                           </TouchableWithoutFeedback>
                           </View>
+                          
                     </View>
                     <View style={styles.list}>
                       {showTodos()}
                     </View>
+
+                    
                  </View>
+    
             </View> }
       
       <StatusBar style="auto" />
-    </SafeAreaView>
-          
-        
+    
+    </View>
+     
      
       
   );
@@ -152,16 +169,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor:'#ff0099'
   },
+  contentContainer:{
+    flex:1,
+    width:"100%",
+    height:647,
+    alignItems: 'space-between',
+    justifyContent: 'space-around',
+  },
   statusBar:{
     flexDirection:"row",
-    flex:0.5,
+    height:40,
     backgroundColor:'#ff00eb',
   },
 
   top:{
+    marginLeft:-1,
+    width:"100%",
     backgroundColor:"#e4ff00",
     flexDirection:"row",
-    flex: 1,
+    height:60,
   },
  
   left:{
@@ -170,7 +196,7 @@ const styles = StyleSheet.create({
     paddingBottom:"7%",
     alignItems:'center',
     justifyContent: 'center',
-    flex: 9,
+    height:577,
     width:"100%",
     backgroundColor: "#ff0000",
   },
@@ -180,7 +206,7 @@ const styles = StyleSheet.create({
     paddingBottom:"7%",
     alignItems:'center',
     justifyContent: 'center',
-    flex: 9,
+    height:577,
     width:"100%",
     backgroundColor: "#005bff",
   },
@@ -190,7 +216,7 @@ const styles = StyleSheet.create({
     paddingBottom:"7%",
     alignItems:'center',
     justifyContent: 'center',
-    flex: 9,
+    height:577,
     width:"100%",
     backgroundColor: '#10ff00',
   },
@@ -202,8 +228,8 @@ const styles = StyleSheet.create({
     backgroundColor:'#ff00eb',
     color: '#cdf104',
     fontSize:30,
-    height:"100%",
-    width:"100%",
+    height:527,
+    width:337,
   },
   form:{
     paddingHorizontal:'1%',
