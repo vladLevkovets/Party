@@ -1,14 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
 import {WebView} from "react-native-webview"
 import Screensaver from "./assets/acid-lsd-trip-crop.jpeg"
+import Lights from "./assets/photo-disco-o_zpsmkxydmb0_gif.gif"
 // import Screen from "./components/Screen.js"
 
 
 export default function App() {
+  const hor = Dimensions.get('window').width;
+  const vert = Dimensions.get('window').height;
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
   const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
@@ -21,10 +24,10 @@ export default function App() {
   const [list,setList]=useState(["A"])
   const [partys,setPartys]=useState([])
   const [tapped,setTapped]=useState(false)
+  const [reg,setReg]=useState(false)
   const [logged,setLogged]=useState(false)
   const [progress,setProgress]=useState("0%")
   const [showList,setShowList]=useState(false)
-  
 
   async function playMusic(url) {
     if (music){
@@ -47,7 +50,7 @@ export default function App() {
   
 useEffect(()=>{
   (tapped &&logged) && playMusic(Help)
-},[tapped])
+},[logged])
   
 
 
@@ -56,6 +59,17 @@ useEffect(()=>{
     
     playMusic(Pink)
   }, []);
+
+ const registr = async () =>{
+    
+     setReg(!reg)
+}
+
+const login = async ()=>{
+     setLogged(true)
+
+}
+
 
   const addToList = () =>{
     console.log(text,todos)
@@ -197,22 +211,86 @@ useEffect(()=>{
     </View>
     
     : tapped && !logged ? 
-    // <View style={styles.mid}><View style={styles.text}>
-    <WebView
-    source={{html: '<iframe src="https://giphy.com/embed/jtd6dzbJuEGYnP9QWv" width=120% height=200% frameBorder="0" class="giphy-embed" allowFullScreen></iframe>'}}
-    style={{marginTop: 20, width:330, height:500, frameBorder:"0"}}
-      />
-  //  </View></View>
+        <View style={styles.screen}>
+          <ImageBackground style={styles.screen} source={require("./assets/blackpaint.jpg")}/>
+
+
+          <View style={{flex:1,flexDirection:'row',justifyContent:"space-between",position:"absolute",zIndex:1,top:0.1*vert,height:0.2*vert,width:hor}}>
+          <TouchableOpacity onPress={login}>
+           <View style={{width:0.50*hor,height:0.4*vert}}>
+           <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/greensplash.png")}/>
+           <Text style={{fontSize:0.03*vert, color:"blue",height:"80%",position:'absolute',paddingTop:0.07*vert,paddingLeft:0.17*hor,fontWeight:"bold"}}>Login</Text>
+           </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={registr}>
+            <View style={{width:0.50*hor,height:0.17*vert}}>
+            <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/yellowsplash.png")}/>
+            <Text style={{fontSize:0.03*vert, color:"red",height:"80%",position:'absolute',paddingTop:0.07*vert,paddingLeft:0.16*hor,fontWeight:"bold"}} >SighIn</Text>
+            </View>
+          </TouchableOpacity>
+          </View>
+
+
+          <View style={{width:0.75*hor,height:0.4*vert,flex:1,justifyContent:'space-between', position:"absolute",top:0.40*vert}}>
+           <View style={{flex:1}}>            
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
+          <TextInput placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+          </View>
+
+          <View style={{flex:1}}> 
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
+          <TextInput  placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          </View>
+
+           {reg &&
+           <View style={{flex:2}}> 
+           <View style={{flex:1}}> 
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
+          <TextInput  placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          </View>
+
+           <View style={{flex:1}}> 
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
+           <TextInput  placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+          </View>
+          </View>
+          }
+          </View>
+
+
+
+          <View style={{display:"flex" ,justifyContent:'center', position:"absolute",zIndex:1,left:0.75*hor,top:0.35*vert,height:0.8*hor,width:0.25*hor}}>
+          
+            <TouchableOpacity style={{flex:1}}> 
+                 
+               <View style={{width:0.25*hor,height:0.2*hor,zIndex:1}}>
+               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/redsplash.png")}/>
+                 <Text style={{fontSize:0.06*hor, color:"yellow",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:0.15*hor,paddingLeft:0.1*hor,fontWeight:"bold"}}>NO</Text>             
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity  style={{flex:1}}>
+             
+               <View style={{width:0.25*hor,height:0.2*hor,zIndex:1,}}>
+               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/bluesplash.png")}/>
+               <Text style={{fontSize:0.06*hor, color:"white",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:"50%",paddingLeft:0.11*hor,fontWeight:"bold"}}>OK</Text> 
+            
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* <Image style={styles.gif} source={require("./assets/5-55452_green-paint-splatter-paint-splash-clipart.png")}/>        */}
+        </View>
     
       :<TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
          <View style={styles.screen}>
          <ImageBackground style={styles.screen} source={Screensaver}/>
            
       
-         <Text style={styles.AppNameA}>A.</Text>
-         <Text style={styles.AppNameC}>C.</Text>
-         <Text style={styles.AppNameI}>I.</Text>
-         <Text style={styles.AppNameD}>D.</Text>
+         <Text style={{height:"20%",width:"40%",position:'absolute',top:"10%",left:"10%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#0172fd",}} >A.</Text>
+         <Text style={{height:"20%",width:"40%",position:'absolute',top:"30%",left:"30%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#F300BD",}}>C.</Text>
+         <Text style={{height:"20%",width:"40%",position:'absolute',top:"50%",left:"55%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#FF0700",}}>I.</Text>
+         <Text style={{height:"20%",width:"40%",position:'absolute',top:"70%",left:"70%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#29EE00",}}>D.</Text>
          </View> 
       </TouchableWithoutFeedback>
       }
@@ -225,52 +303,73 @@ const styles = StyleSheet.create({
     height:"100%",
     width:"100%",
   },
-  AppNameA:{
-    position:'absolute',
-    top:40,
-    left:40,
-    fontSize:100,
-    fontWeight:"bold",
-    textShadowColor: '#FCFF00',
-    textShadowOffset: { width: 5, height: -5 },
-    textShadowRadius: 1,
-    color:"#0172fd",
+  gif:{
+    position:"absolute",
+    zIndex:1,
+    top:"45%",
+  height:"15%",
+  width:"20%",
 },
-  AppNameC:{
-    position:'absolute',
-    top:180,
-    left:120,
-    fontSize:100,
-    fontWeight:"bold",
-    textShadowColor: '#FCFF00',
-    textShadowOffset: { width: 5, height: -5 },
-    textShadowRadius: 1,
-    color:"#F300BD",
 
-  },
-  AppNameI:{
-    position:'absolute',
-    top:300,
-    left:200,
-    fontSize:100,
-    fontWeight:"bold",
-    textShadowColor: '#FCFF00',
-    textShadowOffset: { width: 5, height: -5 },
-    textShadowRadius: 1,
-    color:"#FF0700",
+screenLog:{height:"100%",
+width:"100%",
+backgroundColor:"black",
+},
+//   AppNameA:{
+   
+//     height:"20%",
+//     width:"40%",
+//     position:'absolute',
+//     top:"10%",
+//     left:"10%",
+//     fontSize:100,
+//     fontWeight:"bold",
+//     textShadowColor: '#FCFF00',
+//     textShadowOffset: { width: 5, height: -5 },
+//     textShadowRadius: 1,
+//     color:"#0172fd",
+// },
+//   AppNameC:{
+//     height:"20%",
+//     width:"40%",
+//     position:'absolute',
+//     top:"30%",
+//     left:"30%",
+//     fontSize:100,
+//     fontWeight:"bold",
+//     textShadowColor: '#FCFF00',
+//     textShadowOffset: { width: 5, height: -5 },
+//     textShadowRadius: 1,
+//     color:"#F300BD",
 
-  },AppNameD:{
-    position:'absolute',
-    top:440,
-    left:250,
-    fontSize:100,
-    fontWeight:"bold",
-    textShadowColor: '#FCFF00',
-    textShadowOffset: { width: 5, height: -5 },
-    textShadowRadius: 1,
-    color:"#29EE00",
+//   },
+//   AppNameI:{
+//     height:"20%",
+//     width:"40%",
+//     position:'absolute',
+//     top:"50%",
+//     left:"55%",
+//     fontSize:100,
+//     fontWeight:"bold",
+//     textShadowColor: '#FCFF00',
+//     textShadowOffset: { width: 5, height: -5 },
+//     textShadowRadius: 1,
+//     color:"#FF0700",
 
-  },
+//   },AppNameD:{
+//     height:"20%",
+//     width:"40%",
+//     position:'absolute',
+//     top:"70%",
+//     left:"70%",
+//     fontSize:100,
+//     fontWeight:"bold",
+//     textShadowColor: '#FCFF00',
+//     textShadowOffset: { width: 5, height: -5 },
+//     textShadowRadius: 1,
+//     color:"#29EE00",
+
+//   },
 
   container: {
     flex: 1,
