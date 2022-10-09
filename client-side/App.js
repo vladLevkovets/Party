@@ -1,16 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
-import Constants from 'expo-constants';
-import { getNativeSourceAndFullInitialStatusForLoadAsync } from 'expo-av/build/AV';
-
+import {WebView} from "react-native-webview"
+import Screensaver from "./assets/acid-lsd-trip-crop.jpeg"
+// import Screen from "./components/Screen.js"
 
 
 export default function App() {
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
-  const Smoke= require("./assets/Smokie—WhatCanIDo.mp3")
+  const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
   const [music, setMusic] = useState()
   const [tab,setTab]=useState("left")
@@ -18,18 +18,22 @@ export default function App() {
   const [event,setEvent]=useState("")
   const [text,setText]=useState("")
   const [todos, setTodos] = useState([])
+  const [list,setList]=useState(["A"])
+  const [partys,setPartys]=useState([])
+  const [tapped,setTapped]=useState(false)
+  const [logged,setLogged]=useState(false)
+  const [progress,setProgress]=useState("0%")
+  const [showList,setShowList]=useState(false)
+  
 
-  async function playMusic(url,start,stop) {
-    // if (music){
-    //   music.stopAsync()
-    //   }
+  async function playMusic(url) {
+    if (music){
+      music.stopAsync()
+      }
     const { sound} = await Audio.Sound.createAsync(url);
     setMusic(sound);
     sound.setVolumeAsync(1)
-    sound.playFromPositionAsync (start)
-    setTimeout(() => {
-      sound.stopAsync(false)
-    }, stop);
+    sound.playAsync ()
     console.log('Playing Sound');
   } 
  
@@ -41,14 +45,16 @@ export default function App() {
       : undefined;
  },[music])
   
-
+useEffect(()=>{
+  (tapped &&logged) && playMusic(Help)
+},[tapped])
   
 
 
 
   useEffect(() => {
     
-    playMusic(Help,500,3600)
+    playMusic(Pink)
   }, []);
 
   const addToList = () =>{
@@ -83,41 +89,83 @@ export default function App() {
   }
   
 
+  const makeList=()=>{
+     console.log(partys,todos)
+     setList([...list,{event:todos}])
+     setPartys([...partys,event])
+    //  setEvent("")
+    //  setText("")
+    //  setTodos([])
+  }
+  
+  const showMy=()=>(
+     partys.map((el,i)=>{
+               
+           return <TouchableOpacity key={i} style={styles.party} onPress={(e)=>{setShowList(true)}}><Text style={styles.eventName}>{el}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
+       }
+
+     )
+
+  )
+
   console.log("test")
   return (
-    
     <View style={styles.container}>
-      
+      {/* <ImageBackground source={Screen} */}
+    {tapped && logged? 
+       
+    <View style={styles.container}>
+   
        <Text style={styles.statusBar}></Text>
        <SafeAreaView style={styles.top}>
           
            <TouchableWithoutFeedback >
-               <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playMusic(Help,500,3550)}}>My lists</Text>
+               <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playMusic(Help)}}>My lists</Text>
            </TouchableWithoutFeedback>
            
            <TouchableWithoutFeedback>
-               <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playMusic(Smoke,40000,7000)}}>Pending</Text> 
+               <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playMusic(Smoke)}}>Pending</Text> 
            </TouchableWithoutFeedback>
           
            <TouchableWithoutFeedback>
-               <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playMusic(Pink,9000,7750)}}>New one</Text>
+               <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playMusic(Pink)}}>New one</Text>
           </TouchableWithoutFeedback>
           
         </SafeAreaView>  
       { tab==="left" 
-      ? <View style={styles.left}><View style={styles.text}></View></View>
+      
+      ?  showList ?   
+               <View style={styles.single}>
+               <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
+               <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
+               <View style={styles.listBtns}>
+                        <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
+                        <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
+                    </View> 
+               </View>
+
+            :
+             <View style={styles.left}><View style={styles.text}>{showMy()}</View>
+             </View>
+            
+            
       :tab==="mid"
-          ? <View style={styles.mid}><View style={styles.text}></View></View>
+          ? <View style={styles.mid}><View style={styles.text}>
+            <WebView
+            source={{html: '<iframe src="https://giphy.com/embed/jtd6dzbJuEGYnP9QWv" width=120% height=200% frameBorder="0" class="giphy-embed" allowFullScreen></iframe>'}}
+            style={{marginTop: 20}}
+              />
+           </View></View>
           : <View style={styles.right}>
                 
                  <View style={styles.text}>
                     <View style={styles.form}>
-                      <TextInput style={styles.inputEvent}placeholder= "name of event" onChangeText={(text)=>setEvent(text)} ></TextInput>
+                      <TextInput style={styles.inputEvent}placeholder= "name of event" onChangeText={(text)=>setEvent(text)} value={event}></TextInput>
                           <View style={styles.inputBox}>
                           <TextInput style={styles.inputTodo} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
                           <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={addToList}>
                           <View style={styles.makeTask} >
-                          {/* <Text style={styles.makeTaskButton}>V</Text> */}
+                          
                           <Image source={require("./assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
                           </View>
                           </TouchableWithoutFeedback>
@@ -126,28 +174,104 @@ export default function App() {
                     </View>
                     
                     <View style={styles.list}>
-                    <ScrollView style={styles.scroll}>
-                      {showTodos()}
-                    </ScrollView> 
-
+                       <ScrollView style={styles.scroll}>
+                       {showTodos()}
+                       </ScrollView> 
                     </View>
+                    <View style={styles.listBtns}>
+                        <TouchableOpacity onPress={()=>{setTodos([]);console.log(event);setEvent("");setText("")}} style={styles.cancel}><Text style={styles.btnsText}>CANCEL</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={makeList} style={styles.create}><Text style={styles.btnsText}>CREATE</Text></TouchableOpacity> 
+                    </View>  
                     
-                    
+
                  </View>
+                 
+                   
+                    
     
             </View> }
       
       <StatusBar style="auto" />
-    
-    </View>
-     
-     
       
+      
+    </View>
+    
+    : tapped && !logged ? 
+    // <View style={styles.mid}><View style={styles.text}>
+    <WebView
+    source={{html: '<iframe src="https://giphy.com/embed/jtd6dzbJuEGYnP9QWv" width=120% height=200% frameBorder="0" class="giphy-embed" allowFullScreen></iframe>'}}
+    style={{marginTop: 20, width:330, height:500, frameBorder:"0"}}
+      />
+  //  </View></View>
+    
+      :<TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
+         <View style={styles.screen}>
+         <ImageBackground style={styles.screen} source={Screensaver}/>
+           
+      
+         <Text style={styles.AppNameA}>A.</Text>
+         <Text style={styles.AppNameC}>C.</Text>
+         <Text style={styles.AppNameI}>I.</Text>
+         <Text style={styles.AppNameD}>D.</Text>
+         </View> 
+      </TouchableWithoutFeedback>
+      }
+      </View>  
   );
 }
 
 const styles = StyleSheet.create({
-  
+  screen:{
+    height:"100%",
+    width:"100%",
+  },
+  AppNameA:{
+    position:'absolute',
+    top:40,
+    left:40,
+    fontSize:100,
+    fontWeight:"bold",
+    textShadowColor: '#FCFF00',
+    textShadowOffset: { width: 5, height: -5 },
+    textShadowRadius: 1,
+    color:"#0172fd",
+},
+  AppNameC:{
+    position:'absolute',
+    top:180,
+    left:120,
+    fontSize:100,
+    fontWeight:"bold",
+    textShadowColor: '#FCFF00',
+    textShadowOffset: { width: 5, height: -5 },
+    textShadowRadius: 1,
+    color:"#F300BD",
+
+  },
+  AppNameI:{
+    position:'absolute',
+    top:300,
+    left:200,
+    fontSize:100,
+    fontWeight:"bold",
+    textShadowColor: '#FCFF00',
+    textShadowOffset: { width: 5, height: -5 },
+    textShadowRadius: 1,
+    color:"#FF0700",
+
+  },AppNameD:{
+    position:'absolute',
+    top:440,
+    left:250,
+    fontSize:100,
+    fontWeight:"bold",
+    textShadowColor: '#FCFF00',
+    textShadowOffset: { width: 5, height: -5 },
+    textShadowRadius: 1,
+    color:"#29EE00",
+
+  },
+
   container: {
     flex: 1,
     alignItems: 'center',
@@ -179,6 +303,91 @@ const styles = StyleSheet.create({
     width:"100%",
     backgroundColor: "#ff0000",
   },
+  party:{
+    marginTop:5,
+    flexDirection:'row',
+    justifyContent:"space-between",
+    width:"100%",
+    height:60,
+    backgroundColor:"blue",
+    borderRadius:30,
+  },
+  eventName:{
+    marginTop:10,
+    paddingTop:0,
+    fontSize:20,
+    width:"80%",
+    color:"#161515",
+    paddingLeft:20 ,
+    borderRadius:30,
+    height:40,
+    color:"white"
+  },
+  eventProgress:{
+    textAlign:'center',
+    marginTop:10,
+    marginRight:15,
+    fontSize:20,
+    width:40,
+    height:40,
+    borderRadius:20,
+    color:"white"   
+   },
+   singleEvent:{
+    width:"100%",
+    height:"100%"
+   },
+   single:{
+    paddingTop:40,
+    backgroundColor:"#ff0000",
+    position:'absolute',
+    height:"100%",
+    width:"100%",
+    zIndex:1,
+   },
+  singleTop:{
+   marginLeft:"5%", 
+   width:"90%",
+   height:40,  
+   backgroundColor:"#005bff",
+   borderRadius:20,
+  },
+  singleName:{
+    width:"90%",
+    color:"yellow",
+    paddingLeft:10,
+    paddingTop:5,
+    fontSize:20,
+  },
+  singleText:{
+    width:"90%",
+    fontSize:15,
+  },
+  singleList:{
+    width:"100%",
+    borderWidth:1,
+    height:"85%",
+   backgroundColor:"#ff0099",
+   borderRadius:20,
+   margin:"5%",
+   marginTop:5,
+   marginBottom:10,
+  },
+  delete:{
+    paddingLeft:"5%",
+    width:"30%",
+    height:"60%",
+    backgroundColor:"black",
+    borderRadius:15,
+  },
+  back:{
+    paddingLeft:"5%",
+    width:"30%",
+    height:"60%",
+    backgroundColor:"blue",
+    borderRadius:15,
+  },
+
   mid:{
     paddingHorizontal:"3%",
     paddingTop:"3%",
@@ -223,12 +432,11 @@ const styles = StyleSheet.create({
     keyboardDismissMode:'none', 
     width:"100%",
     flex:1,
-    backgroundColor:"#ff00eb",
+    backgroundColor:"#e4ff00",
     borderRadius:20,
   },
   list:{
    borderWidth:1,
-    // borderTopColor:"#e4ff00",
     height:"70%",
    backgroundColor:"#e4ff00",
    borderRadius:20,
@@ -236,7 +444,6 @@ const styles = StyleSheet.create({
    marginTop:0,
   },
   inputEvent:{
-
     paddingLeft:10 ,
     borderRadius:20,
     height:"40%",
@@ -248,15 +455,12 @@ const styles = StyleSheet.create({
     borderRadius:20,
     height:"100%",
     placeholder:"Task",
-    
     backgroundColor:"#abb7b9",
   },
   inputBox:{
-  
     height:"40%",
     flexDirection:"row",
     borderRadius:20,
-    
     backgroundColor:"#abb7b9"
   },
   box:{
@@ -266,7 +470,6 @@ const styles = StyleSheet.create({
     paddingLeft:10 ,
     borderRadius:20,
     height:40,
-
     backgroundColor:"#ff0909",
   },
 
@@ -293,7 +496,6 @@ const styles = StyleSheet.create({
   color:"white"
  },
  buttonPic:{
-  
   fontSize:15,
   width:30,
   height:30,
@@ -313,7 +515,6 @@ const styles = StyleSheet.create({
  },
  delTask:{
   textAlign:'center',
-  
   marginTop:5,
   marginRight:5,
   fontSize:20,
@@ -323,7 +524,35 @@ const styles = StyleSheet.create({
   backgroundColor:"black",
   color:"white"
 },
-
+listBtns:{
+  justifyContent:"space-around",
+  flexDirection:"row",
+  height:40,
+  width:"100%"
+},
+cancel:{
+  paddingLeft:"5%",
+  width:"30%",
+  height:"60%",
+  backgroundColor:"red",
+  borderRadius:15,
+},
+create:{
+  paddingLeft:"5%",
+  width:"30%",
+  height:"60%",
+  backgroundColor:"green",
+  borderRadius:15,
+},
+btnsText:{
+  width:"80%",
+  height:"100%",
+  textAlign:'center',
+  fontSize:15,
+  color:"yellow",
+  paddingBottom:5,
+  
+},
   tabLeft:{
     paddingTop:9,
     color:"#005bff",
@@ -388,31 +617,5 @@ const styles = StyleSheet.create({
     zIndex:2
   },
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 });
