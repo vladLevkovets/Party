@@ -4,9 +4,9 @@ import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
 import {WebView} from "react-native-webview"
-import Lights from "./assets/photo-disco-o_zpsmkxydmb0_gif.gif"
 import Screen from "./components/Screen.js"
 import LoginReg from "./components/LoginReg.js"
+import Left from "./components/Left.js"
 
 export default function App() {
   const hor = Dimensions.get('window').width;
@@ -59,15 +59,6 @@ useEffect(()=>{
     playMusic(Pink)
   }, []);
 
- const registr = async () =>{
-    
-     setReg(!reg)
-}
-
-const login = async ()=>{
-     setLogged(true)
-
-}
 
 
   const addToList = () =>{
@@ -147,19 +138,19 @@ const login = async ()=>{
         </SafeAreaView>  
       { tab==="left" 
       
-      ?  showList ?   
-               <View style={styles.single}>
-               <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
-               <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
-               <View style={styles.listBtns}>
-                        <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
-                        <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
-                    </View> 
-               </View>
+          ?  <Left showList={showList} setShowList={setShowList} showTodos={showTodos()} partys={partys} progress={progress} event={event}/>
+          // showList 
+          //     ? <View style={styles.single}>
+          //           <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
+          //           <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
+          //           <View style={styles.listBtns}>
+          //               <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
+          //               <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
+          //           </View> 
+          //      </View>
 
-            :
-             <View style={styles.left}><View style={styles.text}>{showMy()}</View>
-             </View>
+          //    :<View style={styles.left}><View style={styles.text}>{showMy()}</View>
+          //     </View>
             
             
       :tab==="mid"
@@ -209,84 +200,11 @@ const login = async ()=>{
       
     </View>
     
-    : tapped && !logged ? <LoginReg reg={reg} setReg={setReg} setLogged={setLogged}/>
-        // <View style={styles.screen}>
-        //   <ImageBackground style={styles.screen} source={require("./assets/blackpaint.jpg")}/>
-
-
-        //   <View style={{flex:1,flexDirection:'row',justifyContent:"space-between",position:"absolute",zIndex:1,top:0.1*vert,height:0.2*vert,width:hor}}>
-        //   <TouchableOpacity onPress={login}>
-        //    <View style={{width:0.50*hor,height:0.4*vert}}>
-        //    <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/greensplash.png")}>
-        //    <Text style={{fontSize:0.03*vert, color:"blue",height:"80%",paddingTop:0.07*vert,paddingLeft:0.17*hor,fontWeight:"bold"}}>Login</Text>
-        //    </ImageBackground>
-        //    </View>
-        //   </TouchableOpacity>
-        //   <TouchableOpacity onPress={registr}>
-        //     <View style={{width:0.50*hor,height:0.17*vert}}>
-        //     <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/yellowsplash.png")}>
-        //     <Text style={{fontSize:0.03*vert, color:"red",height:"80%",paddingTop:0.07*vert,paddingLeft:0.16*hor,fontWeight:"bold"}} >SighIn</Text>
-        //     </ImageBackground>
-        //     </View>
-        //   </TouchableOpacity>
-        //   </View>
-
-
-        //   <View style={{width:0.75*hor,height:0.4*vert,flex:1,justifyContent:'space-between', position:"absolute",top:0.40*vert}}>
-        //    <View style={{flex:1}}>            
-        //    <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
-        //   <TextInput placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
-        //    </ImageBackground>
-        //   </View>
-
-        //   <View style={{flex:1}}> 
-        //    <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
-        //   <TextInput  placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
-        //   </ImageBackground>
-        //   </View>
-
-        //    {reg &&
-        //    <View style={{flex:2}}> 
-        //    <View style={{flex:1}}> 
-        //    <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
-        //   <TextInput  placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
-        //    </ImageBackground>
-        //   </View>
-
-        //    <View style={{flex:1}}> 
-        //    <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
-        //    <TextInput  placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
-        //    </ImageBackground>
-        //   </View>
-        //   </View>
-        //   }
-        //   </View>
-
-
-
-        //   <View style={{display:"flex" ,justifyContent:'center', position:"absolute",zIndex:1,left:0.75*hor,top:0.35*vert,height:0.8*hor,width:0.25*hor}}>
-          
-        //     <TouchableOpacity style={{flex:1}}> 
-                 
-        //        <View style={{width:0.25*hor,height:0.2*hor,zIndex:1}}>
-        //        <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/redsplash.png")}>
-        //          <Text style={{fontSize:0.06*hor, color:"yellow",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:0.15*hor,paddingLeft:0.1*hor,fontWeight:"bold"}}>NO</Text>             
-        //        </ImageBackground>
-        //       </View>
-        //     </TouchableOpacity>
-
-        //     <TouchableOpacity  style={{flex:1}}>
-             
-        //        <View style={{width:0.25*hor,height:0.2*hor,zIndex:1,}}>
-        //        <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/bluesplash.png")}>
-        //        <Text style={{fontSize:0.06*hor, color:"white",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:"50%",paddingLeft:0.11*hor,fontWeight:"bold"}}>OK</Text> 
-        //        </ImageBackground>
-        //       </View>
-        //     </TouchableOpacity>
-        //   </View>
-        // </View>
+    : tapped && !logged 
+             ? <LoginReg reg={reg} setReg={setReg} setLogged={setLogged}/>
+      
     
-      :<Screen setTapped={setTapped}/>
+             :<Screen setTapped={setTapped}/>
      
       }
       </View>  
@@ -303,61 +221,7 @@ screenLog:{height:"100%",
 width:"100%",
 backgroundColor:"black",
 },
-//   AppNameA:{
-   
-//     height:"20%",
-//     width:"40%",
-//     position:'absolute',
-//     top:"10%",
-//     left:"10%",
-//     fontSize:100,
-//     fontWeight:"bold",
-//     textShadowColor: '#FCFF00',
-//     textShadowOffset: { width: 5, height: -5 },
-//     textShadowRadius: 1,
-//     color:"#0172fd",
-// },
-//   AppNameC:{
-//     height:"20%",
-//     width:"40%",
-//     position:'absolute',
-//     top:"30%",
-//     left:"30%",
-//     fontSize:100,
-//     fontWeight:"bold",
-//     textShadowColor: '#FCFF00',
-//     textShadowOffset: { width: 5, height: -5 },
-//     textShadowRadius: 1,
-//     color:"#F300BD",
 
-//   },
-//   AppNameI:{
-//     height:"20%",
-//     width:"40%",
-//     position:'absolute',
-//     top:"50%",
-//     left:"55%",
-//     fontSize:100,
-//     fontWeight:"bold",
-//     textShadowColor: '#FCFF00',
-//     textShadowOffset: { width: 5, height: -5 },
-//     textShadowRadius: 1,
-//     color:"#FF0700",
-
-//   },AppNameD:{
-//     height:"20%",
-//     width:"40%",
-//     position:'absolute',
-//     top:"70%",
-//     left:"70%",
-//     fontSize:100,
-//     fontWeight:"bold",
-//     textShadowColor: '#FCFF00',
-//     textShadowOffset: { width: 5, height: -5 },
-//     textShadowRadius: 1,
-//     color:"#29EE00",
-
-//   },
 
   container: {
     height:"100%",
@@ -382,57 +246,57 @@ backgroundColor:"black",
     height:"10%",
   },
  
-  left:{
-    paddingTop:"3%",
-    paddingBottom:"5%",
-    alignItems:'center',
-    justifyContent: 'center',
-    height:"86%",
-    width:"100%",
-    backgroundColor: "#ff0000",
-  },
-  party:{
-    marginTop:5,
-    flexDirection:'row',
-    justifyContent:"space-between",
-    width:"100%",
-    height:60,
-    backgroundColor:"blue",
-    borderRadius:30,
-  },
-  eventName:{
-    marginTop:10,
-    paddingTop:0,
-    fontSize:20,
-    width:"80%",
-    color:"#161515",
-    paddingLeft:20 ,
-    borderRadius:30,
-    height:40,
-    color:"white"
-  },
-  eventProgress:{
-    textAlign:'center',
-    marginTop:10,
-    marginRight:15,
-    fontSize:20,
-    width:40,
-    height:40,
-    borderRadius:20,
-    color:"white"   
-   },
+  // left:{
+  //   paddingTop:"3%",
+  //   paddingBottom:"5%",
+  //   alignItems:'center',
+  //   justifyContent: 'center',
+  //   height:"86%",
+  //   width:"100%",
+  //   backgroundColor: "#ff0000",
+  // },
+  // party:{
+  //   marginTop:5,
+  //   flexDirection:'row',
+  //   justifyContent:"space-between",
+  //   width:"100%",
+  //   height:60,
+  //   backgroundColor:"blue",
+  //   borderRadius:30,
+  // },
+  // eventName:{
+  //   marginTop:10,
+  //   paddingTop:0,
+  //   fontSize:20,
+  //   width:"80%",
+  //   color:"#161515",
+  //   paddingLeft:20 ,
+  //   borderRadius:30,
+  //   height:40,
+  //   color:"white"
+  // },
+  // eventProgress:{
+  //   textAlign:'center',
+  //   marginTop:10,
+  //   marginRight:15,
+  //   fontSize:20,
+  //   width:40,
+  //   height:40,
+  //   borderRadius:20,
+  //   color:"white"   
+  //  },
    singleEvent:{
     width:"100%",
     height:"100%"
    },
-   single:{
-    paddingTop:40,
-    backgroundColor:"#ff0000",
-    position:'absolute',
-    height:"100%",
-    width:"100%",
-    zIndex:1,
-   },
+  //  single:{
+  //   paddingTop:40,
+  //   backgroundColor:"#ff0000",
+  //   position:'absolute',
+  //   height:"100%",
+  //   width:"100%",
+  //   zIndex:1,
+  //  },
   singleTop:{
    marginLeft:"5%", 
    width:"90%",
