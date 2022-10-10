@@ -21,7 +21,10 @@ export default function Screen({setTapped}) {
     
       const [isLoaded] = useFonts(customFonts);
   if (!isLoaded) {
+    console.log("NOT",isLoaded)
     return <AppLoading />;
+  }else{
+    console.log("ISLOADDED",isLoaded)
   }
    
 
@@ -32,10 +35,10 @@ return  <TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
 <ImageBackground style={styles.screen} source={Screensaver}/>
   
 
-<Text style={[styles.letter,{fontFamily:'batuphat',fontSize:0.16*vert,position:'absolute',top:"10%",left:"10%", }]} >A.</Text>
-<Text style={{height:"20%",width:"40%",position:'absolute',top:"30%",left:"30%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#F300BD",}}>C.</Text>
-<Text style={{height:"20%",width:"40%",position:'absolute',top:"50%",left:"55%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#FF0700",}}>I.</Text>
-<Text style={{height:"20%",width:"40%",position:'absolute',top:"70%",left:"70%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#29EE00",}}>D.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"10%",left:"10%",fontFamily:'batuphat',fontSize:0.16*vert }]} >A.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"30%",left:"30%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#F300BD",}]}>C.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"50%",left:"55%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#FF0700",}]}>I.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"70%",left:"70%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#29EE00",}]}>D.</Text>
 </View> 
 </TouchableWithoutFeedback>
 }
@@ -47,7 +50,8 @@ const styles = StyleSheet.create({
         width:"100%",
       },
     letter:{
-        height:"20%",
+        paddingTop:"5%",
+        height:"40%",
         width:"40%",
         fontWeight:"bold",
         textShadowColor: '#FCFF00'
