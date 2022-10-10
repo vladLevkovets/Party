@@ -6,7 +6,7 @@ import { useState,useEffect} from 'react';
 import {WebView} from "react-native-webview"
 import Screensaver from "./assets/acid-lsd-trip-crop.jpeg"
 import Lights from "./assets/photo-disco-o_zpsmkxydmb0_gif.gif"
-// import Screen from "./components/Screen.js"
+import Screen from "./components/Screen.js"
 
 
 export default function App() {
@@ -125,7 +125,7 @@ const login = async ()=>{
   console.log("test")
   return (
     <View style={styles.container}>
-      {/* <ImageBackground source={Screen} */}
+      
     {tapped && logged? 
        
     <View style={styles.container}>
@@ -205,7 +205,7 @@ const login = async ()=>{
     
             </View> }
       
-      <StatusBar style="auto" />
+      {/* <StatusBar style="auto" /> */}  
       
       
     </View>
@@ -218,14 +218,16 @@ const login = async ()=>{
           <View style={{flex:1,flexDirection:'row',justifyContent:"space-between",position:"absolute",zIndex:1,top:0.1*vert,height:0.2*vert,width:hor}}>
           <TouchableOpacity onPress={login}>
            <View style={{width:0.50*hor,height:0.4*vert}}>
-           <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/greensplash.png")}/>
-           <Text style={{fontSize:0.03*vert, color:"blue",height:"80%",position:'absolute',paddingTop:0.07*vert,paddingLeft:0.17*hor,fontWeight:"bold"}}>Login</Text>
+           <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/greensplash.png")}>
+           <Text style={{fontSize:0.03*vert, color:"blue",height:"80%",paddingTop:0.07*vert,paddingLeft:0.17*hor,fontWeight:"bold"}}>Login</Text>
+           </ImageBackground>
            </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={registr}>
             <View style={{width:0.50*hor,height:0.17*vert}}>
-            <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/yellowsplash.png")}/>
-            <Text style={{fontSize:0.03*vert, color:"red",height:"80%",position:'absolute',paddingTop:0.07*vert,paddingLeft:0.16*hor,fontWeight:"bold"}} >SighIn</Text>
+            <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("./assets/yellowsplash.png")}>
+            <Text style={{fontSize:0.03*vert, color:"red",height:"80%",paddingTop:0.07*vert,paddingLeft:0.16*hor,fontWeight:"bold"}} >SighIn</Text>
+            </ImageBackground>
             </View>
           </TouchableOpacity>
           </View>
@@ -233,25 +235,29 @@ const login = async ()=>{
 
           <View style={{width:0.75*hor,height:0.4*vert,flex:1,justifyContent:'space-between', position:"absolute",top:0.40*vert}}>
            <View style={{flex:1}}>            
-           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
-          <TextInput placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
+          <TextInput placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           </ImageBackground>
           </View>
 
           <View style={{flex:1}}> 
-           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
-          <TextInput  placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
+          <TextInput  placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          </ImageBackground>
           </View>
 
            {reg &&
            <View style={{flex:2}}> 
            <View style={{flex:1}}> 
-           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
-          <TextInput  placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
+          <TextInput  placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+           </ImageBackground>
           </View>
 
            <View style={{flex:1}}> 
-           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}/> 
-           <TextInput  placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,position:'absolute',fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("./assets/thinrainbowMirror.png")}> 
+           <TextInput  placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           </ImageBackground>
           </View>
           </View>
           }
@@ -264,35 +270,35 @@ const login = async ()=>{
             <TouchableOpacity style={{flex:1}}> 
                  
                <View style={{width:0.25*hor,height:0.2*hor,zIndex:1}}>
-               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/redsplash.png")}/>
+               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/redsplash.png")}>
                  <Text style={{fontSize:0.06*hor, color:"yellow",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:0.15*hor,paddingLeft:0.1*hor,fontWeight:"bold"}}>NO</Text>             
+               </ImageBackground>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity  style={{flex:1}}>
              
                <View style={{width:0.25*hor,height:0.2*hor,zIndex:1,}}>
-               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/bluesplash.png")}/>
+               <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("./assets/bluesplash.png")}>
                <Text style={{fontSize:0.06*hor, color:"white",height:0.4*hor,width:0.3*hor,position:'absolute',paddingTop:"50%",paddingLeft:0.11*hor,fontWeight:"bold"}}>OK</Text> 
-            
+               </ImageBackground>
               </View>
             </TouchableOpacity>
           </View>
-
-          {/* <Image style={styles.gif} source={require("./assets/5-55452_green-paint-splatter-paint-splash-clipart.png")}/>        */}
         </View>
     
-      :<TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
-         <View style={styles.screen}>
-         <ImageBackground style={styles.screen} source={Screensaver}/>
+      :<Screen setTapped={setTapped}/>
+      // <TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
+      //    <View style={styles.screen}>
+      //    <ImageBackground style={styles.screen} source={Screensaver}/>
            
       
-         <Text style={{height:"20%",width:"40%",position:'absolute',top:"10%",left:"10%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#0172fd",}} >A.</Text>
-         <Text style={{height:"20%",width:"40%",position:'absolute',top:"30%",left:"30%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#F300BD",}}>C.</Text>
-         <Text style={{height:"20%",width:"40%",position:'absolute',top:"50%",left:"55%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#FF0700",}}>I.</Text>
-         <Text style={{height:"20%",width:"40%",position:'absolute',top:"70%",left:"70%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#29EE00",}}>D.</Text>
-         </View> 
-      </TouchableWithoutFeedback>
+      //    <Text style={{height:"20%",width:"40%",position:'absolute',top:"10%",left:"10%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#0172fd",}} >A.</Text>
+      //    <Text style={{height:"20%",width:"40%",position:'absolute',top:"30%",left:"30%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#F300BD",}}>C.</Text>
+      //    <Text style={{height:"20%",width:"40%",position:'absolute',top:"50%",left:"55%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#FF0700",}}>I.</Text>
+      //    <Text style={{height:"20%",width:"40%",position:'absolute',top:"70%",left:"70%",fontSize:0.16*vert,fontWeight:"bold",textShadowColor: '#FCFF00',textShadowOffset: { width: 5, height: -5 },textShadowRadius: 1,color:"#29EE00",}}>D.</Text>
+      //    </View> 
+      // </TouchableWithoutFeedback>
       }
       </View>  
   );
@@ -303,13 +309,6 @@ const styles = StyleSheet.create({
     height:"100%",
     width:"100%",
   },
-  gif:{
-    position:"absolute",
-    zIndex:1,
-    top:"45%",
-  height:"15%",
-  width:"20%",
-},
 
 screenLog:{height:"100%",
 width:"100%",
