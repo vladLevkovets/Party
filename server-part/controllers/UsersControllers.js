@@ -1,0 +1,59 @@
+const UsersModels = require("../models/UsersModels");
+const argon2 = require("argon2"); 
+const jwt = require("jsonwebtoken");
+const validator = require("validator");
+require("dotenv").config();
+const jwt_secret = process.env.JWT_SECRET;
+
+
+
+
+class UsersCons {
+    async add(req, res) {
+        let {password,password2, email,nickname} = req.body;
+        if (!email || !password || !nickname){
+          return res.json({
+            ok: false,
+            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS",
+          });}
+        if (!validator.isEmail(email)){
+          return res.json({
+            ok: false,
+            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS",
+          });}
+         if (password!==password2) {
+            return res.json({
+                ok:false,
+                message:"passwords doesn't matched"
+            })
+         }
+        try {
+          const user = await UsersModels.findOne({ email }) 
+          let ex = await UsersModels.findOne({ nickname });
+          if (ex || user){
+           return res.json({
+              ok: false,
+              message: `USER OR EMAIL IS ALLREADY EXIST `,
+            })
+          }else{
+            
+          const hash = await argon2.hash(password);
+          const here = await UsersModels.create({ nickname, password: hash, email});
+          console.log(here,here._id.toString())
+          const token = jwt.sign({email,nickname,_id:here._id}, jwt_secret, { expiresIn: "365d" });
+          console.log(token)
+          
+          res.json({ ok: true, token, message: "ALL RIGHT" })
+        }
+          
+        } catch (error) {
+         return res.json({ error });
+        }
+      }
+
+
+}
+
+
+
+module.exports = new UsersCons();

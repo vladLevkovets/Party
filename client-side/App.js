@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback ,Dimensions } from 'react-native';
 import { Audio } from 'expo-av';
 import React from "react"
 import { useState,useEffect} from 'react';
@@ -7,10 +7,13 @@ import {WebView} from "react-native-webview"
 import Screen from "./components/Screen.js"
 import LoginReg from "./components/LoginReg.js"
 import Left from "./components/Left.js"
+import Mid from "./components/Mid.js"
+import Right from "./components/Right.js"
 
 export default function App() {
   const hor = Dimensions.get('window').width;
   const vert = Dimensions.get('window').height;
+
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
   const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
@@ -18,15 +21,11 @@ export default function App() {
   const [tab,setTab]=useState("left")
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
-  const [text,setText]=useState("")
-  const [todos, setTodos] = useState([])
-  const [list,setList]=useState(["A"])
-  const [partys,setPartys]=useState([])
+  const [partys,setPartys]=useState(["a"])
   const [tapped,setTapped]=useState(false)
   const [reg,setReg]=useState(false)
   const [logged,setLogged]=useState(false)
-  const [progress,setProgress]=useState("0%")
-  const [showList,setShowList]=useState(false)
+  
 
   async function playMusic(url) {
     if (music){
@@ -50,71 +49,22 @@ export default function App() {
 useEffect(()=>{
   (tapped &&logged) && playMusic(Help)
 },[logged])
-  
 
-
-
-  useEffect(() => {
+useEffect(() => {
     
     playMusic(Pink)
-  }, []);
+}, []);
 
 
+ 
 
-  const addToList = () =>{
-    console.log(text,todos)
-      const temp = [...todos] 
-      temp.push(text)
-      setTodos([...temp])
-      setText('')
-  }
-  const removeTodo = (idx) => {
-      const temp = [...todos]
-      temp.splice(idx, 1)
-      setTodos([...temp])
-  }
-
-  const showTodos = () => {
-    console.log(todos)
-   return todos.map((todo, idx)=>{
-      return  <View style={styles.box} key={idx}>
-                  <Text
-                    numberOfLines={1} 
-                    style={styles.task} >{todo}
-                  </Text>
-                  <TouchableWithoutFeedback
-                      onPress={( ) => removeTodo(idx)}>
-                     <Text style={styles.delTask}>X</Text>
-                     
-                      </TouchableWithoutFeedback>
-                
-              </View>
-    })
-  }
   
-
-  const makeList=()=>{
-     console.log(partys,todos)
-     setList([...list,{event:todos}])
-     setPartys([...partys,event])
-    //  setEvent("")
-    //  setText("")
-    //  setTodos([])
-  }
   
-  const showMy=()=>(
-     partys.map((el,i)=>{
-               
-           return <TouchableOpacity key={i} style={styles.party} onPress={(e)=>{setShowList(true)}}><Text style={styles.eventName}>{el}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
-       }
-
-     )
-
-  )
+  
 
   console.log("test")
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {minHeight: Math.round(0.85*vert)}]}>
       
     {tapped && logged? 
        
@@ -138,7 +88,7 @@ useEffect(()=>{
         </SafeAreaView>  
       { tab==="left" 
       
-          ?  <Left showList={showList} setShowList={setShowList} showTodos={showTodos()} partys={partys} progress={progress} event={event}/>
+          ?  <Left   partys={partys}  event={event} />
           // showList 
           //     ? <View style={styles.single}>
           //           <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
@@ -154,46 +104,49 @@ useEffect(()=>{
             
             
       :tab==="mid"
-          ? <View style={styles.mid}><View style={styles.text}>
-            <WebView
-            source={{html: '<iframe src="https://giphy.com/embed/jtd6dzbJuEGYnP9QWv" width=120% height=200% frameBorder="0" class="giphy-embed" allowFullScreen></iframe>'}}
-            style={{marginTop: 20}}
-              />
-           </View></View>
-          : <View style={styles.right}>
+          ? <Mid  partys={partys}  event={event}/>
+          // <View style={styles.mid}><View style={styles.text}>
+          //   <WebView
+          //   source={{html: '<iframe src="https://giphy.com/embed/jtd6dzbJuEGYnP9QWv" width=120% height=200% frameBorder="0" class="giphy-embed" allowFullScreen></iframe>'}}
+          //   style={{marginTop: 20}}
+          //     />
+          //  </View></View>
+          : <Right partys={partys} setPartys={setPartys}  />
+          // <View style={styles.right}>
                 
-                 <View style={styles.text}>
-                    <View style={styles.form}>
-                      <TextInput style={styles.inputEvent}placeholder= "name of event" onChangeText={(text)=>setEvent(text)} value={event}></TextInput>
-                          <View style={styles.inputBox}>
-                          <TextInput style={styles.inputTodo} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
-                          <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={addToList}>
-                          <View style={styles.makeTask} >
+          //        <View style={styles.text}>
+          //           <View style={styles.form}>
+          //             <TextInput style={styles.inputEvent}placeholder= "name of event" onChangeText={(text)=>setEvent(text)} value={event}></TextInput>
+          //                 <View style={styles.inputBox}>
+          //                 <TextInput style={styles.inputTodo} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
+          //                 <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={addToList}>
+          //                 <View style={styles.makeTask} >
                           
-                          <Image source={require("./assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
-                          </View>
-                          </TouchableWithoutFeedback>
-                          </View>
+          //                 <Image source={require("./assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
+          //                 </View>
+          //                 </TouchableWithoutFeedback>
+          //                 </View>
                           
-                    </View>
+          //           </View>
                     
-                    <View style={styles.list}>
-                       <ScrollView style={styles.scroll}>
-                       {showTodos()}
-                       </ScrollView> 
-                    </View>
-                    <View style={styles.listBtns}>
-                        <TouchableOpacity onPress={()=>{setTodos([]);console.log(event);setEvent("");setText("")}} style={styles.cancel}><Text style={styles.btnsText}>CANCEL</Text></TouchableOpacity>
-                        <TouchableOpacity onPress={makeList} style={styles.create}><Text style={styles.btnsText}>CREATE</Text></TouchableOpacity> 
-                    </View>  
+          //           <View style={styles.list}>
+          //              <ScrollView style={styles.scroll}>
+          //              {showTodos()}
+          //              </ScrollView> 
+          //           </View>
+          //           <View style={styles.listBtns}>
+          //               <TouchableOpacity onPress={()=>{setTodos([]);console.log(event);setEvent("");setText("")}} style={styles.cancel}><Text style={styles.btnsText}>CANCEL</Text></TouchableOpacity>
+          //               <TouchableOpacity onPress={makeList} style={styles.create}><Text style={styles.btnsText}>CREATE</Text></TouchableOpacity> 
+          //           </View>  
                     
 
-                 </View>
+          //        </View>
                  
                    
                     
     
-            </View> }
+          //   </View> 
+            }
       
       {/* <StatusBar style="auto" /> */}  
       
@@ -340,172 +293,172 @@ backgroundColor:"black",
     borderRadius:15,
   },
 
-  mid:{
-    paddingHorizontal:"3%",
-    paddingTop:"3%",
-    paddingBottom:"7%",
-    alignItems:'center',
-    justifyContent: 'center',
-    height:577,
-    width:"100%",
-    backgroundColor: "#005bff",
-  },
-  right:{
-    paddingHorizontal:"3%",
-    paddingTop:"3%",
-    paddingBottom:"7%",
-    alignItems:'center',
-    justifyContent: 'center',
-    height:577,
-    width:"100%",
-    backgroundColor: '#10ff00',
-  },
+  // mid:{
+  //   paddingHorizontal:"3%",
+  //   paddingTop:"3%",
+  //   paddingBottom:"7%",
+  //   alignItems:'center',
+  //   justifyContent: 'center',
+  //   height:577,
+  //   width:"100%",
+  //   backgroundColor: "#005bff",
+  // },
+//   right:{
+//     paddingHorizontal:"3%",
+//     paddingTop:"3%",
+//     paddingBottom:"7%",
+//     alignItems:'center',
+//     justifyContent: 'center',
+//     height:577,
+//     width:"100%",
+//     backgroundColor: '#10ff00',
+//   },
 
-  text:{
+//   text:{
     
-    textAlign: 'center',
-    borderRadius:20,
-    backgroundColor:'#ff00eb',
-    color: '#cdf104',
-    fontSize:30,
-    height:"97%",
-    width:"95%"
-    ,
-  },
-  form:{
-    borderWidth:1,
-    paddingHorizontal:'1%',
-    height:"20%",
-    justifyContent: 'space-evenly',
-    borderRadius:20,
-    margin:"2%",
-   backgroundColor:"#e4ff00"
-  },
-  scroll:{
-    keyboardDismissMode:'none', 
-    width:"100%",
-    flex:1,
-    backgroundColor:"#e4ff00",
-    borderRadius:20,
-  },
-  list:{
-   borderWidth:1,
-    height:"70%",
-   backgroundColor:"#e4ff00",
-   borderRadius:20,
-   margin:"2%",
-   marginTop:0,
-  },
-  inputEvent:{
-    paddingLeft:10 ,
-    borderRadius:20,
-    height:"40%",
-    backgroundColor:"#abb7b9",
-  },
-  inputTodo:{
-    width:"90%",
-    paddingLeft:10 ,
-    borderRadius:20,
-    height:"100%",
-    placeholder:"Task",
-    backgroundColor:"#abb7b9",
-  },
-  inputBox:{
-    height:"40%",
-    flexDirection:"row",
-    borderRadius:20,
-    backgroundColor:"#abb7b9"
-  },
-  box:{
-    marginTop:5,
-    marginHorizontal:3,
-    flexDirection:"row",
-    paddingLeft:10 ,
-    borderRadius:20,
-    height:40,
-    backgroundColor:"#ff0909",
-  },
+//     textAlign: 'center',
+//     borderRadius:20,
+//     backgroundColor:'#ff00eb',
+//     color: '#cdf104',
+//     fontSize:30,
+//     height:"97%",
+//     width:"95%"
+//     ,
+//   },
+//   form:{
+//     borderWidth:1,
+//     paddingHorizontal:'1%',
+//     height:"20%",
+//     justifyContent: 'space-evenly',
+//     borderRadius:20,
+//     margin:"2%",
+//    backgroundColor:"#e4ff00"
+//   },
+//   scroll:{
+//     keyboardDismissMode:'none', 
+//     width:"100%",
+//     flex:1,
+//     backgroundColor:"#e4ff00",
+//     borderRadius:20,
+//   },
+//   list:{
+//    borderWidth:1,
+//     height:"70%",
+//    backgroundColor:"#e4ff00",
+//    borderRadius:20,
+//    margin:"2%",
+//    marginTop:0,
+//   },
+//   inputEvent:{
+//     paddingLeft:10 ,
+//     borderRadius:20,
+//     height:"40%",
+//     backgroundColor:"#abb7b9",
+//   },
+//   inputTodo:{
+//     width:"90%",
+//     paddingLeft:10 ,
+//     borderRadius:20,
+//     height:"100%",
+//     placeholder:"Task",
+//     backgroundColor:"#abb7b9",
+//   },
+//   inputBox:{
+//     height:"40%",
+//     flexDirection:"row",
+//     borderRadius:20,
+//     backgroundColor:"#abb7b9"
+//   },
+//   box:{
+//     marginTop:5,
+//     marginHorizontal:3,
+//     flexDirection:"row",
+//     paddingLeft:10 ,
+//     borderRadius:20,
+//     height:40,
+//     backgroundColor:"#ff0909",
+//   },
 
-  task:{
-    paddingTop:5,
-    fontSize:15,
-    width:"90%",
-    color:"#161515",
-    paddingLeft:3 ,
-    borderRadius:30,
-    height:40,
-    backgroundColor:"#ff0909",
-  },
+//   task:{
+//     paddingTop:5,
+//     fontSize:15,
+//     width:"90%",
+//     color:"#161515",
+//     paddingLeft:3 ,
+//     borderRadius:30,
+//     height:40,
+//     backgroundColor:"#ff0909",
+//   },
    
- makeTask:{
-  textAlign:'center',
-  marginTop:5,
-  marginRight:5,
-  fontSize:20,
-  width:30,
-  height:30,
-  borderRadius:20,
-  backgroundColor:"green",
-  color:"white"
- },
- buttonPic:{
-  fontSize:15,
-  width:30,
-  height:30,
-  borderRadius:30,
+//  makeTask:{
+//   textAlign:'center',
+//   marginTop:5,
+//   marginRight:5,
+//   fontSize:20,
+//   width:30,
+//   height:30,
+//   borderRadius:20,
+//   backgroundColor:"green",
+//   color:"white"
+//  },
+//  buttonPic:{
+//   fontSize:15,
+//   width:30,
+//   height:30,
+//   borderRadius:30,
   
- },
- makeTaskButton:{
-  textAlign:'center',
-  justifyContent:'flex-start',
-  margin:5,
-  fontSize:15,
-  width:20,
-  height:20,
-  borderRadius:0,
-  backgroundColor:"blue",
-  color:"white"
- },
- delTask:{
-  textAlign:'center',
-  marginTop:5,
-  marginRight:5,
-  fontSize:20,
-  width:30,
-  height:30,
-  borderRadius:20,
-  backgroundColor:"black",
-  color:"white"
-},
-listBtns:{
-  justifyContent:"space-around",
-  flexDirection:"row",
-  height:40,
-  width:"100%"
-},
-cancel:{
-  paddingLeft:"5%",
-  width:"30%",
-  height:"60%",
-  backgroundColor:"red",
-  borderRadius:15,
-},
-create:{
-  paddingLeft:"5%",
-  width:"30%",
-  height:"60%",
-  backgroundColor:"green",
-  borderRadius:15,
-},
-btnsText:{
-  width:"80%",
-  height:"100%",
-  textAlign:'center',
-  fontSize:15,
-  color:"yellow",
-  paddingBottom:5,
+//  },
+//  makeTaskButton:{
+//   textAlign:'center',
+//   justifyContent:'flex-start',
+//   margin:5,
+//   fontSize:15,
+//   width:20,
+//   height:20,
+//   borderRadius:0,
+//   backgroundColor:"blue",
+//   color:"white"
+//  },
+//  delTask:{
+//   textAlign:'center',
+//   marginTop:5,
+//   marginRight:5,
+//   fontSize:20,
+//   width:30,
+//   height:30,
+//   borderRadius:20,
+//   backgroundColor:"black",
+//   color:"white"
+// },
+// listBtns:{
+//   justifyContent:"space-around",
+//   flexDirection:"row",
+//   height:40,
+//   width:"100%"
+// },
+// cancel:{
+//   paddingLeft:"5%",
+//   width:"30%",
+//   height:"60%",
+//   backgroundColor:"red",
+//   borderRadius:15,
+// },
+// create:{
+//   paddingLeft:"5%",
+//   width:"30%",
+//   height:"60%",
+//   backgroundColor:"green",
+//   borderRadius:15,
+// },
+// btnsText:{
+//   width:"80%",
+//   height:"100%",
+//   textAlign:'center',
+//   fontSize:15,
+//   color:"yellow",
+//   paddingBottom:5,
   
-},
+// },
   tabLeft:{
     paddingTop:9,
     color:"#005bff",

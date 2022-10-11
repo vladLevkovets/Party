@@ -1,34 +1,55 @@
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity,Dimensions } from 'react-native';
+import { useState,useEffect} from 'react';
 
 
 
 
 
 
-
-export default function Left ({setShowList,showTodos,partys,showList,progress,event}) {
-
-   console.log({setShowList,showTodos,partys,showList})
+export default function Left ({partys,event}) {
+    const [showList,setShowList]=useState(false)
+    const [progress,setProgress]=useState("0%")
+    console.log({setShowList,showTodos,partys,showList})
 
     const showMy=()=>(
         partys.map((el,i)=>{
                   
               return <TouchableOpacity key={i} style={styles.party} onPress={(e)=>{setShowList(true)}}><Text style={styles.eventName}>{el}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
-          }
-   
-        )
-   
-     )
+          })
+   )
+
+   const removeTodo = (idx) => {
+    const temp = [...todos]
+    temp.splice(idx, 1)
+    setTodos([...temp])
+  }
 
 
-
+const showTodos = () => {
+    console.log(todos)
+return todos.map((todo, idx)=>{
+      return  <View style={styles.box} key={idx}>
+                  <Text
+                    numberOfLines={1} 
+                    style={styles.task} >{todo}
+                  </Text>
+                  <TouchableWithoutFeedback
+                      onPress={( ) => removeTodo(idx)}>
+                     <Text style={styles.delTask}>X</Text>
+                     
+                      </TouchableWithoutFeedback>
+                
+              </View>
+    })
+  }
+ 
 
 
 
 return   showList 
             ? <View style={styles.single}>
                     <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
-                    <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos}</ScrollView></View>
+                    <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
                     <View style={styles.listBtns}>
                           <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
@@ -45,7 +66,7 @@ return   showList
 }
 
 
-const styles={
+const styles=StyleSheet.create({
 left:{
     paddingHorizontal:"3%",
     paddingTop:"4%",
@@ -168,4 +189,4 @@ party:{
     height:40,
     borderRadius:20,
     color:"white" }
-}   
+})   
