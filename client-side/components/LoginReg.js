@@ -1,26 +1,80 @@
 import React from "react"
-import { StatusBar } from 'expo-status-bar';
+import  StatusBar  from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
-
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState,useEffect} from 'react';
+import axios from "axios";
 
 
 export default function Login({reg,setReg,setLogged}) {
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
+    const [form, setValues] = useState({
+      nickname: "",
+      password: "",
+    });
 
-    const registr = async () =>{
+    const handleChange = (text,name) => {
+      console.log(name,text)
+      setValues({ ...form, [name]: text });
+    };
+
+
+
+    const toRegistr =  () =>{
         
-       
+       setReg(true)
            
    }
+
+   const storeToken = async (token) => {
+    try {
+      await AsyncStorage.setItem('token', token)
+    } catch (e) {
+      // saving error
+    }
+  }
+
+
    
-   const login = async ()=>{
-        setLogged(true)
+   
+   const toLogin =  ()=>{
+        
+        setReg(false)
+
    
    }
+   
+   const login= async() =>{
+        setLogged(true) 
 
+
+   }
+
+   const registr = () => {
+    console.log("this is form",form);
+    if (form.password === form.password2) {
+      console.log("cheked")
+      axios
+        .post(`${URL}/users/add`, {
+          email: form.email,
+          password: form.password,
+          password2:form.password2,
+          nickname: form.nickname,
+        })
+        .then((res) => {
+          setMessage(res.data.message);
+          console.log(res);
+          if (res.data.ok) {
+            console.log("this is token", res.data.token)
+            // storeToken(res.data.token)
+            }
+        })
+        .catch((error) => {
+          console.log("oops",error);
+        });
+    }
+  };
 
 
 
@@ -34,14 +88,14 @@ return(
 
 
           <View style={{flexDirection:'row',justifyContent:"space-between",marginTop:0.1*vert,height:0.2*vert,width:hor}}>
-          <TouchableOpacity onPress={login} style={{height:0.2*vert}} >
+          <TouchableOpacity onPress={toLogin} style={{height:0.2*vert}} >
            <View style={{width:0.50*hor,height:0.2*vert}}>
            <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("../assets/greensplash.png")}>
            <Text style={{fontSize:0.03*vert, color:"blue",height:"60%",paddingTop:0.07*vert,paddingLeft:0.17*hor,fontWeight:"bold"}}>Login</Text>
            </ImageBackground>
            </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={registr}>
+          <TouchableOpacity onPress={toRegistr}>
             <View style={{width:0.50*hor,height:0.20*vert}}>
             <ImageBackground  resizeMode='stretch' style={{width:0.5*hor,height:0.2*vert}} source={require("../assets/yellowsplash.png")}>
             <Text style={{fontSize:0.03*vert, color:"red",height:"60%",paddingTop:0.07*vert,paddingLeft:0.16*hor,fontWeight:"bold"}} >SighIn</Text>
@@ -54,13 +108,13 @@ return(
           <View style={{width:0.75*hor,height:0.4*vert,justifyContent:'space-between'}}>
            <View style={{flex:1}}>            
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+          <TextInput onChange={text=>handleChange(text,"nickname")} placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
 
           <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput  placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChange={text=>handleChange(text,"password")} placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
           </ImageBackground>
           </View>
 
@@ -68,13 +122,13 @@ return(
            <View style={{flex:2}}> 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput  placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChange={text=>handleChange(text,"password2")} placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
            </ImageBackground>
           </View>
 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-           <TextInput  placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           <TextInput onChange={text=>handleChange(text,"Email")} placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
           </View>
@@ -94,7 +148,7 @@ return(
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity  style={{flex:1}}>
+            <TouchableOpacity  style={{flex:1}}  onPress={registr}>
              
                <View style={{width:0.25*hor,height:0.2*hor}}>
                <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("../assets/bluesplash.png")}>
