@@ -11,8 +11,9 @@ export default function Login({reg,setReg,setLogged}) {
     const vert = Dimensions.get('window').height;
 
     const registr = async () =>{
-    
-        setReg(!reg)
+        
+       
+           
    }
    
    const login = async ()=>{
