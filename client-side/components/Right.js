@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, TextInput,ScrollView,Image,Dimensions, TouchableOpacity } from 'react-native';
 import { useState,useEffect} from 'react';
-
+import axios from 'axios';
+// import JWT from 'expo-jwt';
+// import JWT_SECRET from "../config.js"
 
 
 export default function Right ({partys,setPartys}) {
@@ -9,7 +11,8 @@ export default function Right ({partys,setPartys}) {
     const [event,setEvent]=useState("")
     const [text,setText]=useState("")
     const [todos, setTodos] = useState([])
-    const [list,setList]=useState(["A"]) 
+    const [list,setList]=useState([])
+    const URL = "http://192.168.1.59:4040" 
     const styles= {
       right:{
         paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:0.86*vert,width:"100%",backgroundColor: '#10ff00',},      
@@ -67,14 +70,32 @@ export default function Right ({partys,setPartys}) {
         temp.splice(idx, 1)
         setTodos([...temp])
       }
-    const makeList=()=>{
+    const makeList=async ()=>{
         console.log(todos)
         setList([...list,{event:todos}])
-        setPartys([...partys,event])
-        setEvent("")
-        setText("")
-        setTodos([])
-     }
+        let data=JWT.decode(token, key);
+        console.log(data)
+
+     axios   
+       .post(`${URL}/todos/add`, {
+        event: event,
+        password: form.password,
+      })
+       .then((res) => {
+  
+          if (res.data.ok) {
+            // here after login was successful we extract the email passed from the server inside the token
+            // let decodedToken = jose.decodeJwt(res.data.token);
+           
+            // let data=JWT.decode(res.data.token, JWT_SECRET);
+            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
+            console.log(
+              " token after login:",data)
+              // decodedToken.email
+                 
+          }
+        })
+      }
 
      const showTodos = () => {
         console.log(todos)

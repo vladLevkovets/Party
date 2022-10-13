@@ -3,12 +3,15 @@ import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback ,Dimensi
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import React from "react"
-import { useState,useEffect} from 'react';
+import {useCallback, useState,useEffect} from 'react';
 import Screen from "./components/Screen.js"
 import LoginReg from "./components/LoginReg.js"
 import Left from "./components/Left.js"
 import Mid from "./components/Mid.js"
 import Right from "./components/Right.js"
+import axios from "axios";
+import * as SplashScreen from 'expo-splash-screen';
+
 
 export default function App() {
   const hor = Dimensions.get('window').width;
@@ -22,7 +25,7 @@ export default function App() {
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
   const [partys,setPartys]=useState(["a"])
-  const [tapped,setTapped]=useState(false)
+  const [checked,setChecked]=useState(false)
   const [reg,setReg]=useState(false)
   const [logged,setLogged]=useState(false)
   
@@ -40,10 +43,12 @@ export default function App() {
  
   const   getToken = async () => {
     try {
-      const value = await AsyncStorage.getItem('token');
+      const value = await AsyncStorage.getItem('@token');
       if (value !== null) {
         // We have data!!
-        console.log("data");
+        let temp=JSON.parse(value)
+        setToken(temp)
+        console.log(temp);
       }
     } catch (error) {
       console.log("nothing")
@@ -60,62 +65,87 @@ export default function App() {
  },[music])
   
 useEffect(()=>{
-  (tapped &&logged) && playMusic(Help)
+  (checked &&logged) &&
+   playMusic(Help)
 },[logged])
 
 useEffect(() => {
-
-
-
-
-    playMusic(Pink)
+  playMusic(Pink)
+  getToken()
+ 
 }, []);
 
+const login = async (token) => {
+  try {
+    await AsyncStorage.setItem('@token',JSON.stringify(token))
+    console.log("putted")
+    setLogged(true);
+  } catch (e) {
+    console.log("oops")
+    // saving error
+  }
+};
 
-// useEffect(
-//   () => {
+const logout = async () => {
+  try {
+    await AsyncStorage.removeItem('@token')
+    setLogged(false);
+  } catch(e) {
+    // remove error
+  }
+};
+
+
+
+useEffect(
+  () => {
     
-//     const verify_token = async () => {
+    const verify_token = async () => {
+      console.log("cheking token")
+       
+      try {
+        if (!token) {
+          console.log("nothing")
+          setLogged(false)
+          setChecked(true)
+        }else {
 
-//       try {
-//         if (!token) {
-//           setLogged(false)
-//         }else {
-//           let data= jose.decodeJwt(token)        
-//         axios.defaults.headers.common['Authorization'] = token;
-//         const response = await axios.post(`http://localhost:4040/users/verify_token`);
-//         console.log(response)
-//         return response.data.ok ? login(token) : logout();
-//         }
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     };
-//     verify_token();
-//   },
-//   [token]
-//   )
+          console.log("go to server")
+                
+        axios.defaults.headers.common['Authorization'] = token;
+        const response = await axios.post(`http://192.168.1.59:4040/users/verify_token`);
+        console.log("we have answer",response)
+        setChecked(true)
+        return response.data.ok ? login(token) : logout();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    verify_token();
+  },
+  [token]
+  )
 
-  const login = async (token) => {
-    try {
-      await AsyncStorage.setItem('@token', JSON.stringify(token))
-      console.log("putted")
-      setLogged(true);
-    } catch (e) {
-      console.log("oops")
-      // saving error
+  const onLayoutRootView = useCallback(async () => {
+    if (checked) {
+      // This tells the splash screen to hide immediately! If we call this after
+      // `setAppIsReady`, then we may see a blank screen while the app is
+      // loading its initial state and rendering its first pixels. So instead,
+      // we hide the splash screen once we know the root view has already
+      // performed layout.
+      await SplashScreen.hideAsync();
     }
-    
-  };
-  const logout = async () => {
-    try {
-      await AsyncStorage.removeItem('@token')
-      setLogged(false);
-    } catch(e) {
-      // remove error
-    }
-    
-  };
+  }, [checked]);
+
+  if (!checked) {
+    return null;
+  }
+
+
+
+  
+  
 
 
  
@@ -128,7 +158,7 @@ useEffect(() => {
   return (
   <View style={[styles.container, {minHeight: vert}]}>
       
-    {tapped && logged
+    { checked && logged
     ?  <View style={[styles.container,{minHeight: vert}]}>
    
           <Text style={[styles.statusBar,{minHeight: 0.05*vert}]}></Text>
@@ -165,11 +195,11 @@ useEffect(() => {
       
       </View>
     
-    : tapped && !logged 
-             ? <LoginReg reg={reg} setReg={setReg} setLogged={setLogged}/>
+    : checked && !logged &&
+             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} setToken={setToken}/>
       
     
-             :<Screen setTapped={setTapped}/>
+            //  :<Screen setchecked={setchecked}/>
      
       }
   </View>  

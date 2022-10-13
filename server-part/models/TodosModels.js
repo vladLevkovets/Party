@@ -3,8 +3,12 @@ const Schema=mongoose.Schema;
 
 
 const TodoSchema=new Schema({
-
-
+    event_id:{
+        type:Schema.Types.ObjectId,
+        required:true,
+        ref:'events'
+    },
+    
 
 
     task:{type:String,required:true},
@@ -14,7 +18,6 @@ const TodoSchema=new Schema({
     done:{type:Boolean},
     doneBy:{type:String},
     voted:{type:Boolean},
-    votedBy:{type:String},
+    votedBy:{type:Object},
     suggested:{type:Boolean},
-    votes:{type:Object}
  })

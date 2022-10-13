@@ -4,11 +4,17 @@ import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState,useEffect} from 'react';
 import axios from "axios";
+import JWT from 'expo-jwt';
+import JWT_SECRET from "../config.js"
 
 
-export default function Login({reg,setReg,setLogged}) {
+
+
+export default function Login({reg,setReg,setLogged,setToken}) {
+    
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
+    const URL = "http://192.168.1.59:4040"
     const [form, setValues] = useState({
       nickname: "",
       password: "",
@@ -29,7 +35,7 @@ export default function Login({reg,setReg,setLogged}) {
 
    const storeToken = async (token) => {
     try {
-      await AsyncStorage.setItem('token', token)
+      await AsyncStorage.setItem('@token',JSON.stringify(token))
     } catch (e) {
       // saving error
     }
@@ -46,10 +52,31 @@ export default function Login({reg,setReg,setLogged}) {
    }
    
    const login= async() =>{
-        setLogged(true) 
-
-
-   }
+       
+      axios
+        .post(`${URL}/users/login`, {
+          nickname: form.nickname,
+          password: form.password,
+        })
+        .then((res) => {
+  
+          if (res.data.ok) {
+            // here after login was successful we extract the email passed from the server inside the token
+            // let data=JWT.decode(res.data.token, JWT_SECRET);
+            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
+            console.log(
+              " token after login:",res.data.token
+              // decodedToken.email
+            );
+  
+            storeToken(res.data.token);
+            setLogged(true)            
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    }
 
    const registr = () => {
     console.log("this is form",form);
@@ -63,11 +90,16 @@ export default function Login({reg,setReg,setLogged}) {
           nickname: form.nickname,
         })
         .then((res) => {
-          setMessage(res.data.message);
           console.log(res);
           if (res.data.ok) {
+            // console.log(JWT_SECRET)
+            // var data=JWT.decode(res.data.token, {JWT_SECRET});
+            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
+            // console.log(
+            //   " token after login:",data)
             console.log("this is token", res.data.token)
-            // storeToken(res.data.token)
+            storeToken(res.data.token)
+            setLogged(true)
             }
         })
         .catch((error) => {
@@ -108,13 +140,13 @@ return(
           <View style={{width:0.75*hor,height:0.4*vert,justifyContent:'space-between'}}>
            <View style={{flex:1}}>            
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChange={text=>handleChange(text,"nickname")} placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+          <TextInput onChangeText={text=>handleChange(text,"nickname")} placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
 
           <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChange={text=>handleChange(text,"password")} placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChangeText={text=>handleChange(text,"password")} placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
           </ImageBackground>
           </View>
 
@@ -122,13 +154,13 @@ return(
            <View style={{flex:2}}> 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChange={text=>handleChange(text,"password2")} placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChangeText={text=>handleChange(text,"password2")} placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
            </ImageBackground>
           </View>
 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-           <TextInput onChange={text=>handleChange(text,"Email")} placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           <TextInput onChangeText={text=>handleChange(text,"email")} placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
           </View>
@@ -148,7 +180,7 @@ return(
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity  style={{flex:1}}  onPress={registr}>
+            <TouchableOpacity  style={{flex:1}}  onPress={reg? registr : login}>
              
                <View style={{width:0.25*hor,height:0.2*hor}}>
                <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("../assets/bluesplash.png")}>

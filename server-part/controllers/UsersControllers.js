@@ -43,7 +43,7 @@ class UsersCons {
           const token = jwt.sign({email,nickname,_id:here._id}, jwt_secret, { expiresIn: "365d" });
           console.log(token)
           
-          res.json({ ok: true, token, message: "ALL RIGHT" })
+          res.json({ ok: true, token })
         }
           
         } catch (error) {
@@ -81,9 +81,15 @@ class UsersCons {
       async verify_token(req, res) {
         console.log(req.headers.authorization);
         const token = req.headers.authorization;
-        const email=jwt.decode(token).email
+        let decoded=jwt.decode(token)
+        if (decoded) {
+        var email=jwt.decode(token).email
+        console.log(email)
+        
         try{
+        
         const present= await  UsersModels.findOne({email})
+        console.log(present)
         if (present) {
            jwt.verify(token, jwt_secret, (err, succ) => {
             console.log(token, jwt_secret)
@@ -95,8 +101,9 @@ class UsersCons {
         res.json({ ok: false, message: "something went wrong" })}
       }catch (error) {
         res.json({ error });
-      }
-      }
+      }}else{
+        res.json({ok:false})
+      }}
 
       async findOne(req, res) {
         console.log(req.params);
