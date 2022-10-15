@@ -12,7 +12,7 @@ export default function Right ({token}) {
     const [text,setText]=useState("")
     const [todos, setTodos] = useState([])
     const [list,setList]=useState([])
-    const URL = "http://192.168.1.59:4040" 
+    const URL = "http://192.168.0.174:4040" 
     const styles= {
       right:{
         paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:0.86*vert,width:"100%",backgroundColor: '#10ff00',},      
@@ -50,7 +50,7 @@ export default function Right ({token}) {
         paddingLeft:"5%",width:"30%",height:"60%",backgroundColor:"green",borderRadius:15,},
       btnsText:{
         width:"80%",height:"100%",textAlign:'center',fontSize:15,color:"yellow",paddingBottom:5,},
-  }
+      }
     
 
 
@@ -75,21 +75,12 @@ export default function Right ({token}) {
         let data=JWT.decode(token, JWT_SECRET);
         console.log(data._id)
 
-     axios  
+      axios  
        
-     
-
-
-
-
-
-
-
        .post(`${URL}/todos/add`, {
         name: event,
         user_id:data._id,
         todos:todos,
-        _id:"63497e0c4a987040a8c07abe"
         })
        .then((res) => {
   
@@ -102,9 +93,7 @@ export default function Right ({token}) {
           console.log(error);
         }) 
            
-             
-                 
-      }
+    }
 
      const showTodos = () => {
         console.log(todos)
@@ -122,7 +111,7 @@ export default function Right ({token}) {
                     
                   </View>
         })
-      }
+    }
 
 
 

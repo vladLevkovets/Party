@@ -14,7 +14,7 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
     
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
-    const URL = "http://192.168.1.59:4040"
+    const URL = "http://192.168.0.174:4040"
     const [form, setValues] = useState({
       nickname: "",
       password: "",

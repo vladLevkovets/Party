@@ -49,7 +49,7 @@ class UsersCons {
         } catch (error) {
          return res.json({ error });
         }
-      }
+    }
 
       async login(req, res) {
         const { nickname, password } = req.body;
@@ -97,12 +97,12 @@ class UsersCons {
             ? res.json({ ok: false, message: "something went wrong" })
             : res.json({ ok: true, succ });
         })
-      }else{
-        res.json({ ok: false, message: "something went wrong" })}
-      }catch (error) {
-        res.json({ error });
-      }}else{
-        res.json({ok:false})
+        }else{
+           res.json({ ok: false, message: "something went wrong" })}
+        }catch (error) {
+            res.json({ error });
+        }}else{
+           res.json({ok:false})
       }}
 
       async findOne(req, res) {

@@ -119,7 +119,7 @@ useEffect(
                   console.log(" decoded token:",data) 
 
                   axios.defaults.headers.common['Authorization'] = token;
-                  const response = await axios.post(`http://192.168.1.59:4040/users/verify_token`);
+                  const response = await axios.post(`http://192.168.0.174:4040/users/verify_token`);
                   console.log("we have answer",response)
         
                   return response.data.ok ? login(token) : logout();

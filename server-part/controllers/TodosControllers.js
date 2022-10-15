@@ -19,16 +19,28 @@ async add(req,res){
       const task = await TodosModels.create({task:todos[i],event_id:id,status:"wait"})
       console.log(task)
       }
-       res.json(party)
+      // const list= await TodosModels.find({id})
+       res.json(id)
       }
       catch (error) {
         console.log(error)
         return res.json({ error });
        }
+}
 
 
 
+
+async find(req, res) {
+      console.log(req.params);
+      try {
+        console.log();
+        const tasks = await TodosModels.find(req.params);
+        res.json(tasks);
+      } catch (error) {
+        res.json({ error });
       }
+    }
 
 
 }
