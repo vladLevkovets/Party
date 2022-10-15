@@ -21,3 +21,5 @@ const TodoSchema=new Schema({
     votedBy:{type:Object},
     suggested:{type:Boolean},
  })
+
+ module.exports= mongoose.model("todos",TodoSchema);

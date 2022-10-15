@@ -10,7 +10,7 @@ import JWT_SECRET from "../config.js"
 
 
 
-export default function Login({reg,setReg,setLogged,setToken}) {
+export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
     
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
@@ -19,6 +19,14 @@ export default function Login({reg,setReg,setLogged,setToken}) {
       nickname: "",
       password: "",
     });
+
+ useEffect(()=>{
+  playMusic(Pink)
+
+ },[])
+  
+
+
 
     const handleChange = (text,name) => {
       console.log(name,text)
@@ -107,12 +115,6 @@ export default function Login({reg,setReg,setLogged,setToken}) {
         });
     }
   };
-
-
-
-
-
-
 
 return(
 <View style={styles.screen}>

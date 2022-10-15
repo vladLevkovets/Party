@@ -3,7 +3,8 @@ const express = require('express')
     app = express(),
     mongoose = require('mongoose'),
     UsersRoutes=require('./routes/UsersRoutes')
-    // EventsRoutes=require('.routes/EventsRoutes')
+    EventsRoutes=require('./routes/EventsRoutes')
+    TodosRoutes=require('./routes/TodosRoutes')
     require("dotenv").config({ path: "./.env" });
 // to print incoming requests from mongoose in the terminal
 mongoose.set('debug',true)
@@ -26,7 +27,8 @@ connecting()
 
 // routes
 app.use('/users', UsersRoutes);
-// app.use("/events", EventsRoutes)
+app.use("/events", EventsRoutes)
+app.use("/todos",TodosRoutes)
 
 
 // Set the server to listen on port 3000

@@ -2,14 +2,14 @@ const mongoose= require('mongoose');
 const Schema=mongoose.Schema;
 const EventSchema=new Schema({
    
-    name:{type:String,required:true,unique:true},
-    users:[{
+    name:{type:String,required:true},
+    users:[{user_id:{
             type:Schema.Types.ObjectId,
-            status:String,
             required:true,
             ref:'users'
-        }],
-        
+        },status:{type:String}}
+    ],
+      
     },
     {strictQuery:false})
 

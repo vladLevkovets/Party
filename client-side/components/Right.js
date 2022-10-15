@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, TextInput,ScrollView,Image,Dimensions, TouchableOpacity } from 'react-native';
 import { useState,useEffect} from 'react';
 import axios from 'axios';
-// import JWT from 'expo-jwt';
-// import JWT_SECRET from "../config.js"
+import JWT from 'expo-jwt';
+import {JWT_SECRET} from "../config.js"
 
 
-export default function Right ({partys,setPartys}) {
+export default function Right ({token}) {
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
     const [event,setEvent]=useState("")
@@ -72,29 +72,38 @@ export default function Right ({partys,setPartys}) {
       }
     const makeList=async ()=>{
         console.log(todos)
-        setList([...list,{event:todos}])
-        let data=JWT.decode(token, key);
-        console.log(data)
+        let data=JWT.decode(token, JWT_SECRET);
+        console.log(data._id)
 
-     axios   
+     axios  
+       
+     
+
+
+
+
+
+
+
        .post(`${URL}/todos/add`, {
-        event: event,
-        password: form.password,
-      })
+        name: event,
+        user_id:data._id,
+        todos:todos,
+        _id:"63497e0c4a987040a8c07abe"
+        })
        .then((res) => {
   
           if (res.data.ok) {
-            // here after login was successful we extract the email passed from the server inside the token
-            // let decodedToken = jose.decodeJwt(res.data.token);
-           
-            // let data=JWT.decode(res.data.token, JWT_SECRET);
-            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
-            console.log(
-              " token after login:",data)
-              // decodedToken.email
-                 
+            let data=JWT.decode(token, JWT_SECRET);  
+            console.log(" token after login:",data)
           }
         })
+        .catch((error) => {
+          console.log(error);
+        }) 
+           
+             
+                 
       }
 
      const showTodos = () => {

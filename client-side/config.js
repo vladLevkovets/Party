@@ -1,1 +1,1 @@
-JWT_SECRET="zaproshennia"
+export const JWT_SECRET="zaproshennia"

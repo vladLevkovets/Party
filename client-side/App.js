@@ -11,12 +11,15 @@ import Mid from "./components/Mid.js"
 import Right from "./components/Right.js"
 import axios from "axios";
 import * as SplashScreen from 'expo-splash-screen';
+SplashScreen.preventAutoHideAsync()
+import JWT from 'expo-jwt';
+import {JWT_SECRET} from "./config.js"
 
 
 export default function App() {
   const hor = Dimensions.get('window').width;
   const vert = Dimensions.get('window').height;
-  const [token,setToken]=useState("")
+  const [token,setToken]=useState(null)
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
   const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
@@ -27,10 +30,10 @@ export default function App() {
   const [partys,setPartys]=useState(["a"])
   const [checked,setChecked]=useState(false)
   const [reg,setReg]=useState(false)
-  const [logged,setLogged]=useState(false)
+  const [logged,setLogged]=useState(null)
   
 
-  async function playMusic(url) {
+async function playMusic(url) {
     if (music){
       music.stopAsync()
       }
@@ -39,9 +42,9 @@ export default function App() {
     sound.setVolumeAsync(1)
     sound.playAsync ()
     console.log('Playing Sound');
-  } 
+} 
  
-  const   getToken = async () => {
+const   getToken = async () => {
     try {
       const value = await AsyncStorage.getItem('@token');
       if (value !== null) {
@@ -49,114 +52,95 @@ export default function App() {
         let temp=JSON.parse(value)
         setToken(temp)
         console.log(temp);
-      }
+      }else {setToken("")}
     } catch (error) {
       console.log("nothing")
       // Error retrieving data
     }
-  };
+};
 
- useEffect(()=>{
-  return music
+const login = async (token) => {
+    try {
+      await AsyncStorage.setItem('@token',JSON.stringify(token))
+      console.log("putted")
+      setLogged(true);
+      setChecked(true)  
+        
+    } catch (e) {
+      console.log("oops")
+      // saving error
+    }
+};
+  
+const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('@token')
+      console.log("without token")
+      setLogged(false);
+      setChecked(true)  
+       
+    } catch(e) {
+      // remove error
+    }
+};
+
+
+useEffect(()=>{
+      return music
       ? () => {
           music.unloadAsync();
         }
       : undefined;
- },[music])
+},[music])
   
 useEffect(()=>{
-  (checked &&logged) &&
-   playMusic(Help)
+     (logged) &&
+        playMusic(Help)
 },[logged])
 
 useEffect(() => {
-  playMusic(Pink)
-  getToken()
- 
+      getToken()
 }, []);
 
-const login = async (token) => {
-  try {
-    await AsyncStorage.setItem('@token',JSON.stringify(token))
-    console.log("putted")
-    setLogged(true);
-  } catch (e) {
-    console.log("oops")
-    // saving error
-  }
-};
-
-const logout = async () => {
-  try {
-    await AsyncStorage.removeItem('@token')
-    setLogged(false);
-  } catch(e) {
-    // remove error
-  }
-};
-
-
-
 useEffect(
-  () => {
-    
-    const verify_token = async () => {
-      console.log("cheking token")
-       
-      try {
-        if (!token) {
-          console.log("nothing")
-          setLogged(false)
-          setChecked(true)
-        }else {
+    () => {
+      
+      const verify_token = async () => {
+           console.log("cheking token")
+           try {
+              if (token==="") {
+                  console.log("nothing")
+                  setLogged(false)
+                  setChecked(true)                                  
+              }else if (token){
+          
+                  console.log("go to server")
+                  let data=JWT.decode(token, JWT_SECRET);
+                  console.log(" decoded token:",data) 
 
-          console.log("go to server")
-                
-        axios.defaults.headers.common['Authorization'] = token;
-        const response = await axios.post(`http://192.168.1.59:4040/users/verify_token`);
-        console.log("we have answer",response)
-        setChecked(true)
-        return response.data.ok ? login(token) : logout();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    verify_token();
-  },
-  [token]
-  )
-
-  const onLayoutRootView = useCallback(async () => {
-    if (checked) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
-    }
-  }, [checked]);
-
-  if (!checked) {
-    return null;
-  }
-
-
-
-  
-  
-
+                  axios.defaults.headers.common['Authorization'] = token;
+                  const response = await axios.post(`http://192.168.1.59:4040/users/verify_token`);
+                  console.log("we have answer",response)
+        
+                  return response.data.ok ? login(token) : logout();
+               }
+            } catch (error) {
+                 console.log(error);
+               }
+       };
+      verify_token();
+},[token])
 
  
 
-  
-  
-  
+useEffect(()=>{
+  checked&&logged!==null  && ( async()=>{ await SplashScreen.hideAsync()})()
+},[checked,logged])
+
 
   console.log("test")
-  return (
-  <View style={[styles.container, {minHeight: vert}]}>
+return (
+  <View style={[styles.container, {minHeight: vert}]}  >
       
     { checked && logged
     ?  <View style={[styles.container,{minHeight: vert}]}>
@@ -186,7 +170,7 @@ useEffect(
               :tab==="mid"
                       ? <Mid  partys={partys}  event={event}/>
          
-                      : <Right partys={partys} setPartys={setPartys}  />
+                      : <Right token={token}  />
           
         }
       
@@ -196,7 +180,7 @@ useEffect(
       </View>
     
     : checked && !logged &&
-             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} setToken={setToken}/>
+             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} playMusic={playMusic} Pink={Pink}/>
       
     
             //  :<Screen setchecked={setchecked}/>

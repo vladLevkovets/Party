@@ -1,7 +1,7 @@
 const EventsModels = require("../models/EventsModels");
-const UsersModels =require("../models/UsersModels")
 
-class UsersCons {
+
+class EventsCons {
 
     async add(req, res) {
         let {name,user_id} = req.body;
@@ -16,6 +16,8 @@ class UsersCons {
          return res.json({ error });
         }
       }
+    }
+      module.exports = new EventsCons();
 
 
 
@@ -52,6 +54,3 @@ class UsersCons {
 
 
 
-
-
-}
