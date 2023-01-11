@@ -11,20 +11,21 @@ const jwt_secret = process.env.JWT_SECRET;
 class UsersCons {
     async add(req, res) {
         let {password,password2, email,nickname} = req.body;
+        console.log(password,password2, email,nickname)
         if (!email || !password || !nickname){
           return res.json({
             ok: false,
-            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS",
+            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS   все ",
           });}
         if (!validator.isEmail(email)){
           return res.json({
             ok: false,
-            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS",
+            message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS   мьіло",
           });}
          if (password!==password2) {
             return res.json({
                 ok:false,
-                message:"passwords doesn't matched"
+                message:"passwords doesn't matched  пароль"
             })
          }
         try {
@@ -54,7 +55,7 @@ class UsersCons {
       async login(req, res) {
         const { nickname, password } = req.body;
         if (!nickname || !password){
-         return res.send({ ok: false, message: "All field are required" });
+         return res.send({ ok: false, message: "All fields are required" });
         }
         try {
           const user = await UsersModels.findOne({ nickname });
@@ -65,10 +66,9 @@ class UsersCons {
           const match = await argon2.verify(user.password, password);
           console.log(match)
           if (match) {
-            // once user is verified and confirmed we send back the token to keep in localStorage in the client and in this token we can add some data -- payload -- to retrieve from the token in the client and see, for example, which user is logged in exactly. The payload would be the first argument in .sign() method. In the following example we are sending an object with key userEmail and the value of email coming from the "user" found in line 47
-            const token = jwt.sign({nickname,email:user.email,status:user.status,_id:user._id,Bdate:user.Bdate,country:user.country,slogan:user.slogan,city:user.city}, jwt_secret, { expiresIn: "7d" }); //{expiresIn:'365d'}
-            // after we send the payload to the client you can see how to get it in the client's Login component inside handleSubmit function
-           return res.json({ ok: true, token });
+            const token = jwt.sign({nickname,email:user.email,_id:user._id}, jwt_secret, { expiresIn: "30sec" }); 
+            console.log(token)
+            return res.json({ ok: true, token });
           } else {
            return res.send({ ok: false, message: "invalid data provided" });
           }
@@ -82,6 +82,7 @@ class UsersCons {
         console.log(req.headers.authorization);
         const token = req.headers.authorization;
         let decoded=jwt.decode(token)
+        console.log(decoded)
         if (decoded) {
         var email=jwt.decode(token).email
         console.log(email)
