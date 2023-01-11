@@ -1,6 +1,6 @@
 import React from "react"
 import  StatusBar  from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableWithoutFeedback, TextInput,Keyboard, ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions,KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState,useEffect} from 'react';
 import axios from "axios";
@@ -19,6 +19,10 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
       nickname: "",
       password: "",
     });
+    const [text1,setText1]=useState("")
+    const [text2,setText2]=useState("")
+    const [text3,setText3]=useState("")
+    const [text4,setText4]=useState("")
 
  useEffect(()=>{
   playMusic(Pink)
@@ -33,7 +37,12 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
       setValues({ ...form, [name]: text });
     };
 
-
+ const reset =()=> {
+  setText1(''),
+  setText2(''),
+  setText3(''),
+  setText4('')
+ }
 
     const toRegistr =  () =>{
         
@@ -44,6 +53,7 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
    const storeToken = async (token) => {
     try {
       await AsyncStorage.setItem('@token',JSON.stringify(token))
+      console.log("newtoken", token)
     } catch (e) {
       // saving error
     }
@@ -78,7 +88,10 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
             );
   
             storeToken(res.data.token);
-            setLogged(true)            
+            setLogged(true) 
+
+          }else{
+            Alert.alert("Login",`${res.data.message}`)
           }
         })
         .catch((error) => {
@@ -117,9 +130,9 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
   };
 
 return(
-<View style={styles.screen}>
+<KeyboardAvoidingView style={styles.screen} behavior="position" >
+          <TouchableWithoutFeedback style={styles.screen} onPress={Keyboard.dismiss}>
           <ImageBackground style={styles.screen} source={require("../assets/blackpaint.jpg")}>
-
 
           <View style={{flexDirection:'row',justifyContent:"space-between",marginTop:0.1*vert,height:0.2*vert,width:hor}}>
           <TouchableOpacity onPress={toLogin} style={{height:0.2*vert}} >
@@ -138,17 +151,17 @@ return(
           </TouchableOpacity>
           </View>
 
-           <View style={{flexDirection:"row", width:hor,height:0.4*vert,marginTop:0.1*vert,justifyContent:'space-between'}} >
+           <View style={{flexDirection:"row", width:hor,height:0.4*vert,marginTop:0.15*vert,justifyContent:'space-between'}} >
           <View style={{width:0.75*hor,height:0.4*vert,justifyContent:'space-between'}}>
            <View style={{flex:1}}>            
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChangeText={text=>handleChange(text,"nickname")} placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+          <TextInput onChangeText={text=>{setText1(text),handleChange(text,"nickname")}} value={text1} placeholder='Nickname' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
 
           <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChangeText={text=>handleChange(text,"password")} placeholder='Password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChangeText={text=>{setText2(text),handleChange(text,"password")}} value={text2} placeholder='Password' placeholderTextColor="white" secureTextEntry={true} style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
           </ImageBackground>
           </View>
 
@@ -156,13 +169,13 @@ return(
            <View style={{flex:2}}> 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-          <TextInput onChangeText={text=>handleChange(text,"password2")} placeholder='Repeat password' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
+          <TextInput onChangeText={text=>{setText3(text),handleChange(text,"password2")}} value={text3} placeholder='Repeat password' placeholderTextColor="white" secureTextEntry={true} style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}} />
            </ImageBackground>
           </View>
 
            <View style={{flex:1}}> 
            <ImageBackground style={{width:0.75*hor,height:0.1*vert}} source={require("../assets/thinrainbowMirror.png")}> 
-           <TextInput onChangeText={text=>handleChange(text,"email")} placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
+           <TextInput onChangeText={text=>{setText4(text),handleChange(text,"email")}} value={text4} placeholder='Email' placeholderTextColor="white" style={{marginLeft:0.03*hor,marginTop:0.01*hor, width:0.7*hor,height:0.06*vert,fontSize:0.03*vert,fontWeight:"bold",color:'white'}}/>
            </ImageBackground>
           </View>
           </View>
@@ -173,7 +186,7 @@ return(
 
           <View style={{flex:1,justifyContent:'center',height:0.8*hor,width:0.25*hor}}>
           
-            <TouchableOpacity style={{flex:1}}> 
+            <TouchableOpacity style={{flex:1}} onPress={reset}> 
                  
                <View style={{width:0.25*hor,height:0.2*hor}}>
                <ImageBackground  resizeMode='cover' style={{width:0.3*hor,height:0.4*hor}} source={require("../assets/redsplash.png")}>
@@ -192,8 +205,10 @@ return(
             </TouchableOpacity>
           </View>
         </View>
-        </ImageBackground>   
-        </View>
+        </ImageBackground> 
+        </TouchableWithoutFeedback> 
+        
+        </KeyboardAvoidingView>
         )
 
 }
@@ -201,7 +216,7 @@ return(
 
 const styles = StyleSheet.create({
     screen:{
-        height:"100%",
+        height:"101%",
         width:"100%",
       },
     

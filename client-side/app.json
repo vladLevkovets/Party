@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/acid-lsd-trip-crop.jpeg",
+      "image": "./assets/butyfont.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, TextInput,ScrollView,Image,Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableWithoutFeedback, TextInput,ScrollView,Image,Dimensions, TouchableOpacity,Alert } from 'react-native';
 import { useState,useEffect} from 'react';
 import axios from 'axios';
 import JWT from 'expo-jwt';
@@ -11,11 +11,10 @@ export default function Right ({token}) {
     const [event,setEvent]=useState("")
     const [text,setText]=useState("")
     const [todos, setTodos] = useState([])
-    const [list,setList]=useState([])
     const URL = "http://192.168.0.174:4040" 
     const styles= {
       right:{
-        paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:0.86*vert,width:"100%",backgroundColor: '#10ff00',},      
+        paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:"86%",width:"100%",backgroundColor: '#10ff00',},      
       text:{
         textAlign: 'center',borderRadius:20,backgroundColor:'#ff00eb',color: '#cdf104',fontSize:30,height:"100%",width:"100%",},
       form:{
@@ -35,13 +34,15 @@ export default function Right ({token}) {
       task:{
         paddingTop:5,fontSize:15,width:"90%",color:"#161515",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",},         
       makeTask:{
-        textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:30,height:30,borderRadius:20,backgroundColor:"green",color:"white"},
+        textAlign:'center',marginTop:10,marginRight:5,fontSize:20,width:30,height:30,borderRadius:20,backgroundColor:"green",color:"white"},
       buttonPic:{
         fontSize:15,width:30,height:30,borderRadius:30,},
       makeTaskButton:{
         textAlign:'center',justifyContent:'flex-start',margin:5,fontSize:15,width:20,height:20,borderRadius:0,backgroundColor:"blue",color:"white"},
       delTask:{
         textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:30,height:30,borderRadius:20,backgroundColor:"black",color:"white"},
+      delButton:{
+        textAlign:'center',marginTop:2,marginLeft:5,fontSize:17,width:20,height:20,borderRadius:20,backgroundColor:"black",color:"white"},
       listBtns:{
         justifyContent:"space-around",flexDirection:"row",height:40,width:"100%"},
       cancel:{
@@ -59,11 +60,13 @@ export default function Right ({token}) {
 
    
     const addToList = () =>{
+        if (text===""){}
+        else{
         console.log(text,todos)
         const temp = [...todos] 
         temp.push(text)
         setTodos([...temp])
-        setText('')
+        setText('')}
       }
     const removeTodo = (idx) => {
         const temp = [...todos]
@@ -74,7 +77,7 @@ export default function Right ({token}) {
         console.log(todos)
         let data=JWT.decode(token, JWT_SECRET);
         console.log(data._id)
-
+    
       axios  
        
        .post(`${URL}/todos/add`, {
@@ -85,9 +88,14 @@ export default function Right ({token}) {
        .then((res) => {
   
           if (res.data.ok) {
-            let data=JWT.decode(token, JWT_SECRET);  
-            console.log(" token after login:",data)
+            // let data=JWT.decode(token, JWT_SECRET);  
+            // console.log(" token after login:",data)
+            setEvent("")
+            setText("")
+            setTodos([])
+            Alert.alert("Succes","Party is added to your list !")
           }
+          else {Alert.alert("Data is not enough",res.data.message)}
         })
         .catch((error) => {
           console.log(error);
@@ -103,12 +111,13 @@ export default function Right ({token}) {
                         numberOfLines={1} 
                         style={styles.task} >{todo}
                       </Text>
+                      <View style={styles.delTask}>
                       <TouchableWithoutFeedback
                           onPress={( ) => removeTodo(idx)}>
-                         <Text style={styles.delTask}>X</Text>
+                         <Text style={styles.delButton}>X</Text>
                          
-                          </TouchableWithoutFeedback>
-                    
+                      </TouchableWithoutFeedback>
+                      </View>
                   </View>
         })
     }

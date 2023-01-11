@@ -20,6 +20,7 @@ export default function App() {
   const hor = Dimensions.get('window').width;
   const vert = Dimensions.get('window').height;
   const [token,setToken]=useState(null)
+  // const {data,setData}=useState({})
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
   const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
@@ -27,7 +28,7 @@ export default function App() {
   const [tab,setTab]=useState("left")
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
-  const [partys,setPartys]=useState(["a"])
+  const [partys,setPartys]=useState([])
   const [checked,setChecked]=useState(false)
   const [reg,setReg]=useState(false)
   const [logged,setLogged]=useState(null)
@@ -59,13 +60,12 @@ const   getToken = async () => {
     }
 };
 
-const login = async (token) => {
+const login = async () => {
     try {
       await AsyncStorage.setItem('@token',JSON.stringify(token))
-      console.log("putted")
+      console.log("putted",token)
       setLogged(true);
-      setChecked(true)  
-        
+      setChecked(true) 
     } catch (e) {
       console.log("oops")
       // saving error
@@ -94,40 +94,40 @@ useEffect(()=>{
 },[music])
   
 useEffect(()=>{
-     (logged) &&
+     if (logged){
         playMusic(Help)
+       
+     }
+        
 },[logged])
 
 useEffect(() => {
       getToken()
 }, []);
 
+const verify_token = async () => {
+  console.log("cheking token")
+  try {
+     if (token==="") {
+         console.log("nothing")
+         setLogged(false)
+         setChecked(true)                                  
+     }else if (token){
+ 
+         axios.defaults.headers.common['Authorization'] = token;
+         const response = await axios.post(`http://192.168.0.174:4040/users/verify_token`);
+         console.log("we have answer",response)
+
+         return response.data.ok ? login() : logout();
+      }
+   } catch (error) {
+        console.log(error);
+      }
+};
+
+
 useEffect(
     () => {
-      
-      const verify_token = async () => {
-           console.log("cheking token")
-           try {
-              if (token==="") {
-                  console.log("nothing")
-                  setLogged(false)
-                  setChecked(true)                                  
-              }else if (token){
-          
-                  console.log("go to server")
-                  let data=JWT.decode(token, JWT_SECRET);
-                  console.log(" decoded token:",data) 
-
-                  axios.defaults.headers.common['Authorization'] = token;
-                  const response = await axios.post(`http://192.168.0.174:4040/users/verify_token`);
-                  console.log("we have answer",response)
-        
-                  return response.data.ok ? login(token) : logout();
-               }
-            } catch (error) {
-                 console.log(error);
-               }
-       };
       verify_token();
 },[token])
 
@@ -137,41 +137,46 @@ useEffect(()=>{
   checked&&logged!==null  && ( async()=>{ await SplashScreen.hideAsync()})()
 },[checked,logged])
 
-
-  console.log("test")
 return (
   <View style={[styles.container, {minHeight: vert}]}  >
       
     { checked && logged
-    ?  <View style={[styles.container,{minHeight: vert}]}>
+    ? 
+    
+     <View style={[styles.container,{minHeight: vert}]}>
    
           <Text style={[styles.statusBar,{minHeight: 0.05*vert}]}></Text>
           <SafeAreaView style={[styles.top,{minHeight: 0.1*vert}]}>
-          
-              <TouchableWithoutFeedback >
-                   <Text style={tab==="left"?styles.tabLeftA:styles.tabLeft} onPress={()=>{setTab("left"); playMusic(Help)}}>My lists</Text>
+
+          <View style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
+          <TouchableWithoutFeedback >
+                   <Text style={styles.tabLeftName} onPress={()=>{getToken(); verify_token(); playMusic(Help);setTab("left")}}>My lists</Text>
+          </TouchableWithoutFeedback>
+          </View> 
+
+          <View style={styles.tabMid}>
+              <TouchableWithoutFeedback style={styles.tabMid}>
+                   <Text style={styles.tabMidName} onPress={()=>{getToken(); verify_token(); playMusic(Smoke);setTab("mid")}}>Pending</Text> 
               </TouchableWithoutFeedback>
-           
-              <TouchableWithoutFeedback>
-                   <Text style={styles.tabMid} onPress={()=>{setTab("mid"); playMusic(Smoke)}}>Pending</Text> 
-              </TouchableWithoutFeedback>
+          </View>
           
-              <TouchableWithoutFeedback>
-                   <Text style={tab==="right"?styles.tabRightA:styles.tabRight} onPress={()=>{setTab("right"); playMusic(Pink)}}>New one</Text>
+
+          <View style={tab==="right"?styles.tabRightA:styles.tabRight}>
+              <TouchableWithoutFeedback style={tab==="right"?styles.tabRightA:styles.tabRight}>
+                   <Text style={styles.tabRightName} onPress={()=>{getToken(); verify_token(); playMusic(Pink);setTab("right")}}>New one</Text>
               </TouchableWithoutFeedback>
-          
+          </View>
+
           </SafeAreaView>  
         { tab==="left" 
       
-              ?  <Left   partys={partys}  event={event} />
+              ?  <Left token={token} getToken={getToken}/>
           
-            
-            
               :tab==="mid"
-                      ? <Mid  partys={partys}  event={event}/>
+                      ? <Mid  token={token} logout={logout}/>
          
                       : <Right token={token}  />
-          
+                      
         }
       
          <StatusBar style="auto" />  
@@ -180,10 +185,10 @@ return (
       </View>
     
     : checked && !logged &&
-             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} playMusic={playMusic} Pink={Pink}/>
+             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} playMusic={playMusic} Pink={Pink} />
       
     
-            //  :<Screen setchecked={setchecked}/>
+             
      
       }
   </View>  
@@ -203,7 +208,7 @@ backgroundColor:"black",
 
 
   container: {
-   
+    height:"110%",
     width:"100%",
     flex: 1,
     alignItems: 'center',
@@ -289,6 +294,38 @@ backgroundColor:"black",
     flex:40,
     zIndex:2
   },
-  
-
+  tabLeftName:{
+    fontSize:20,
+    color:"#005bff",
+    textAlign:'center',
+    marginLeft:2,
+    marginRight:3,
+    backgroundColor: '#ff0000',
+    flex:40,
+    zIndex:0
+  },
+  tabMidName:{
+    fontSize:20,
+    color:"#10ff00",
+    textAlign:'center',
+    marginLeft:2,
+    marginRight:3,
+    backgroundColor: '#005bff',
+    flex:40,
+    zIndex:1, 
+  },
+  tabRightName:{
+    fontSize:20,
+    color:"#ff0000",
+    textAlign:'center',
+    marginRight:1,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    backgroundColor: '#10ff00',
+    flex:40,
+    zIndex:0,
+  },
+touch:{
+width:"100%",height:"100%"
+}
 });

@@ -35,10 +35,10 @@ return  <TouchableWithoutFeedback onPress={()=>{setTapped(true)}}>
 <ImageBackground style={styles.screen} source={Screensaver}/>
   
 
-<Text style={[styles.letter,{position:'absolute',top:"10%",left:"10%",fontFamily:'batuphat',fontSize:0.16*vert }]} >A.</Text>
-<Text style={[styles.letter,{position:'absolute',top:"30%",left:"30%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#F300BD",}]}>C.</Text>
-<Text style={[styles.letter,{position:'absolute',top:"50%",left:"55%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#FF0700",}]}>I.</Text>
-<Text style={[styles.letter,{position:'absolute',top:"70%",left:"70%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#29EE00",}]}>D.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"12%",left:"5%",fontFamily:'batuphat',fontSize:0.15*vert }]} >A.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"32%",left:"25%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#F300BD",}]}>C.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"52%",left:"48%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#FF0700",}]}>I.</Text>
+<Text style={[styles.letter,{position:'absolute',top:"72%",left:"60%",fontFamily:'batuphat',fontSize:0.16*vert,color:"#29EE00",}]}>D.</Text>
 </View> 
 </TouchableWithoutFeedback>
 }
