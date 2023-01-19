@@ -17,7 +17,8 @@ class UsersCons {
             ok: false,
             message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS   все ",
           });}
-        if (!validator.isEmail(email)){
+        if (validator.isEmail(email)==false){
+          console.log(validator.isEmail(email))
           return res.json({
             ok: false,
             message: "WRONG DATA PROVIDED FILL IN AND CHECK ALL FIELDS   мьіло",
@@ -66,7 +67,7 @@ class UsersCons {
           const match = await argon2.verify(user.password, password);
           console.log(match)
           if (match) {
-            const token = jwt.sign({nickname,email:user.email,_id:user._id}, jwt_secret, { expiresIn: "30sec" }); 
+            const token = jwt.sign({nickname,email:user.email,_id:user._id}, jwt_secret, { expiresIn: "365d" }); 
             console.log(token)
             return res.json({ ok: true, token });
           } else {
@@ -111,11 +112,32 @@ class UsersCons {
         try {
           console.log(req.params.nickname);
           const user = await UsersModels.findOne(req.params);
-          res.json(user);
+          if (user!==null){
+            console.log(user)
+          res.json({ok:true,user:user});
+          }else{
+            res.json({ok:false})
+          }
         } catch (error) {
           res.json({ error });
         }
       }
+
+
+    async update(req,res){
+      console.log(req.body)
+       try {
+        const done = await UsersModels.updateOne({nickname:req.body.nickname},{friends:req.body.friends})
+        console.log(done)
+        const user = await UsersModels.findOne({nickname:req.body.nickname});
+        console.log(user)
+        res.json({ok:true,user:user})
+      }
+      catch (error) {
+        res.json({ error });
+      }
+    }
+
 
       async delete (req, res){
         let {email} = req.body;

@@ -10,6 +10,9 @@ async add(req,res){
       if (!name){
         res.json({ok:false, message:"enter party name"})
       }
+      if (todos.length===0){
+        res.json({ok:false, message:"enter atleast one task"})
+      }
       else{
       try{ 
       if (!_id){
