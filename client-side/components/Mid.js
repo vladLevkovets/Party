@@ -3,18 +3,19 @@ import { useState,useEffect} from 'react';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
+import Friends from "./Friends.js"
 
 
 
 
 
-
-export default function Left ({token,logout}) {
+export default function Left ({token,logout,verify_token}) {
     const [showList,setShowList]=useState(false)
     const [progress,setProgress]=useState("0%")
     const [partys,setPartys]=useState([])
     const [event,setEvent]=useState("")
     const [todos,setTodos]=useState([])
+    const [showFriends,setShowFriends]=useState(false)
     const URL = "http://192.168.0.174:4040"
     
 
@@ -41,8 +42,9 @@ export default function Left ({token,logout}) {
   }
 
  useEffect(()=>{
+  console.log(token)
  getEvents()
-},[])
+},[token])
 
 
 
@@ -107,12 +109,19 @@ return todos.map((todo, idx)=>{
 
 
 
-return   showList 
-            ? <View style={styles.single}>
+return   showList && showFriends
+            ? <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} v/>
+            // <View style={styles.single}>
+            //   <Text style={styles.singleName}>YOU HAVE NO FRIENDS, SORRY !</Text>
+            //   <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+            // </View>
+            : showList
+              ? <View style={styles.single}>
                     <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
                     <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
                     <View style={styles.listBtns}>
                           <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{setShowFriends(true)}} style={styles.back}><Text style={styles.btnsText}>INVITE</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{logout()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                     </View> 
              </View>
@@ -147,13 +156,13 @@ text:{
     height:"100%",
     width:"100%",
     }, 
-    box:{
+box:{
       marginTop:5,marginHorizontal:3,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",},      
-      task:{
-        paddingTop:5,fontSize:16,width:"90%",color:"#161515",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",},
-        delTask:{
+task:{
+        paddingTop:5,fontSize:16,width:"90%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",},
+delTask:{
           textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:30,height:30,borderRadius:20,backgroundColor:"black",color:"white"},
-        single:{
+single:{
     paddingTop:40,
     backgroundColor:"#ff0000",
     position:'absolute',
@@ -174,16 +183,7 @@ singleName:{
     paddingLeft:10,
     paddingTop:5,
     fontSize:20,
-   },
-singleList:{
-    textAlign: 'center',
-    borderRadius:20,
-    backgroundColor:'#ff00eb',
-    color: '#cdf104',
-    fontSize:30,
-    height:"100%",
-    width:"100%",
-  },   
+   },   
 singleText:{
     width:"90%",
     fontSize:15,
@@ -198,35 +198,37 @@ singleList:{
     marginTop:5,
     marginBottom:10,
    },
-listBtns:{
+   listBtns:{
+    marginTop:10,
     justifyContent:"space-around",
     flexDirection:"row",
     height:40,
     width:"100%"
    }, 
 btnsText:{
-    width:"80%",
-    height:"100%",
-    textAlign:'center',
+    width:"80%",      
     fontSize:15,
-    color:"yellow",
-    paddingBottom:5,
-    
-   },    
-delete:{
-    paddingLeft:"5%",
-    width:"30%",
-    height:"60%",
-    backgroundColor:"black",
-    borderRadius:15,
-   },
+    color:"white",
+    textAlign:'center'
+}, 
 back:{
     paddingLeft:"5%",
     width:"30%",
     height:"60%",
     backgroundColor:"blue",
     borderRadius:15,
+    justifyContent:"center",
+    textAlign:'center'
+},     
+delete:{
+    paddingLeft:"5%",
+    width:"30%",
+    height:"60%",
+    backgroundColor:"black",
+    borderRadius:15,
+    justifyContent:"center",
    },
+
 party:{
     marginTop:5,
     flexDirection:'row',

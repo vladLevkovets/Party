@@ -10,7 +10,7 @@ import JWT_SECRET from "../config.js"
 
 
 
-export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
+export default function Login({reg,setReg,setLogged,playMusic,Pink,setToken}) {
     
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
@@ -54,6 +54,7 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
     try {
       await AsyncStorage.setItem('@token',JSON.stringify(token))
       console.log("newtoken", token)
+      setToken(token)
     } catch (e) {
       // saving error
     }
@@ -70,7 +71,7 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
    }
    
    const login= async() =>{
-       
+    console.log("slem login")
       axios
         .post(`${URL}/users/login`, {
           nickname: form.nickname,
@@ -86,10 +87,9 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink}) {
               " token after login:",res.data.token
               // decodedToken.email
             );
-  
             storeToken(res.data.token);
             setLogged(true) 
-
+            
           }else{
             Alert.alert("Login",`${res.data.message}`)
           }

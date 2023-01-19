@@ -5,7 +5,9 @@ import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 
 
-export default function Right ({token}) {
+export default function Right ({token,verify_token,partys}) {
+
+
     const hor = Dimensions.get('window').width;
     const vert = Dimensions.get('window').height;
     const [event,setEvent]=useState("")
@@ -44,16 +46,18 @@ export default function Right ({token}) {
       delButton:{
         textAlign:'center',marginTop:2,marginLeft:5,fontSize:17,width:20,height:20,borderRadius:20,backgroundColor:"black",color:"white"},
       listBtns:{
-        justifyContent:"space-around",flexDirection:"row",height:40,width:"100%"},
+          marginTop:5,justifyContent:"space-around",flexDirection:"row",height:40,width:"100%"}, 
       cancel:{
-        paddingLeft:"5%",width:"30%",height:"60%",backgroundColor:"red", borderRadius:15,},
+        paddingLeft:"5%",width:"30%",height:"60%",backgroundColor:"red",borderRadius:15,justifyContent:"center",textAlign:'center'},
       create:{
-        paddingLeft:"5%",width:"30%",height:"60%",backgroundColor:"green",borderRadius:15,},
+        paddingLeft:"5%",width:"30%",height:"60%",backgroundColor:"green",borderRadius:15,justifyContent:"center",textAlign:'center'},
       btnsText:{
-        width:"80%",height:"100%",textAlign:'center',fontSize:15,color:"yellow",paddingBottom:5,},
+          width:"80%",fontSize:15,color:"white",textAlign:'center'
+      }, 
       }
     
-
+      
+    
 
 
 
@@ -77,7 +81,11 @@ export default function Right ({token}) {
         console.log(todos)
         let data=JWT.decode(token, JWT_SECRET);
         console.log(data._id)
-    
+        let i = false
+        partys.forEach((task)=> {if(task.name===event) {i=true}})
+        if (i){
+          Alert.alert("Event already exist","please change event name")
+        }else{
       axios  
        
        .post(`${URL}/todos/add`, {
@@ -100,11 +108,11 @@ export default function Right ({token}) {
         .catch((error) => {
           console.log(error);
         }) 
-           
+      }   
     }
 
      const showTodos = () => {
-        console.log(todos)
+
        return todos.map((todo, idx)=>{
           return  <View style={styles.box} key={idx}>
                       <Text
@@ -129,7 +137,7 @@ export default function Right ({token}) {
 
 
 
-return      <View behavior='hide' style={styles.right}>
+return      <View  style={styles.right}>
                 
                 <View style={styles.text}>
                    <View style={styles.form}>
@@ -153,7 +161,7 @@ return      <View behavior='hide' style={styles.right}>
                    </View>
                    <View style={styles.listBtns}>
                        <TouchableOpacity onPress={()=>{setTodos([]);console.log(event);setEvent("");setText("")}} style={styles.cancel}><Text style={styles.btnsText}>CANCEL</Text></TouchableOpacity>
-                       <TouchableOpacity onPress={makeList} style={styles.create}><Text style={styles.btnsText}>CREATE</Text></TouchableOpacity> 
+                       <TouchableOpacity onPress={()=>{verify_token();makeList()}} style={styles.create}><Text style={styles.btnsText}>CREATE</Text></TouchableOpacity> 
                    </View>  
                    
 

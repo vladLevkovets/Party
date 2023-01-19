@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import React from "react"
 import {useCallback, useState,useEffect} from 'react';
-import Screen from "./components/Screen.js"
 import LoginReg from "./components/LoginReg.js"
 import Left from "./components/Left.js"
 import Mid from "./components/Mid.js"
@@ -49,8 +48,8 @@ const   getToken = async () => {
     try {
       const value = await AsyncStorage.getItem('@token');
       if (value !== null) {
-        // We have data!!
-        let temp=JSON.parse(value)
+      // We have data!!
+        let temp=JSON.parse(value)        
         setToken(temp)
         console.log(temp);
       }else {setToken("")}
@@ -78,7 +77,6 @@ const logout = async () => {
       console.log("without token")
       setLogged(false);
       setChecked(true)  
-       
     } catch(e) {
       // remove error
     }
@@ -96,13 +94,13 @@ useEffect(()=>{
 useEffect(()=>{
      if (logged){
         playMusic(Help)
-       
+        
      }
         
 },[logged])
 
 useEffect(() => {
-      getToken()
+     getToken()
 }, []);
 
 const verify_token = async () => {
@@ -149,33 +147,33 @@ return (
           <SafeAreaView style={[styles.top,{minHeight: 0.1*vert}]}>
 
           <View style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
-          <TouchableWithoutFeedback >
-                   <Text style={styles.tabLeftName} onPress={()=>{getToken(); verify_token(); playMusic(Help);setTab("left")}}>My lists</Text>
+          <TouchableWithoutFeedback style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
+                   <Text style={styles.tabLeftName} onPress={()=>{ verify_token();  playMusic(Help);setTab("left")}}>My lists </Text>
           </TouchableWithoutFeedback>
           </View> 
 
           <View style={styles.tabMid}>
               <TouchableWithoutFeedback style={styles.tabMid}>
-                   <Text style={styles.tabMidName} onPress={()=>{getToken(); verify_token(); playMusic(Smoke);setTab("mid")}}>Pending</Text> 
+                   <Text style={styles.tabMidName} onPress={()=>{ verify_token(); playMusic(Smoke);setTab("mid")}}>Pending</Text> 
               </TouchableWithoutFeedback>
           </View>
           
 
           <View style={tab==="right"?styles.tabRightA:styles.tabRight}>
               <TouchableWithoutFeedback style={tab==="right"?styles.tabRightA:styles.tabRight}>
-                   <Text style={styles.tabRightName} onPress={()=>{getToken(); verify_token(); playMusic(Pink);setTab("right")}}>New one</Text>
+                   <Text style={styles.tabRightName} onPress={()=>{ verify_token(); playMusic(Pink);setTab("right")}}>New one</Text>
               </TouchableWithoutFeedback>
           </View>
 
           </SafeAreaView>  
         { tab==="left" 
       
-              ?  <Left token={token} getToken={getToken}/>
+              ?  <Left token={token} partys={partys} setPartys={setPartys} verify_token={verify_token}/>
           
               :tab==="mid"
-                      ? <Mid  token={token} logout={logout}/>
+                      ? <Mid  token={token} logout={logout} verify_token={verify_token}/>
          
-                      : <Right token={token}  />
+                      : <Right token={token} partys={partys} verify_token={verify_token}/>
                       
         }
       
@@ -185,7 +183,7 @@ return (
       </View>
     
     : checked && !logged &&
-             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} playMusic={playMusic} Pink={Pink} />
+             <LoginReg reg={reg} setReg={setReg} setLogged={setLogged} playMusic={playMusic} Pink={Pink} setToken={setToken}/>
       
     
              
@@ -235,6 +233,7 @@ backgroundColor:"black",
     paddingTop:9,
     color:"#005bff",
     textAlign:'center',
+    justifyContent:"center",
     marginLeft:1,
     marginTop:15,
     marginRight:-20,
@@ -248,6 +247,7 @@ backgroundColor:"black",
     paddingTop:9,
     color:"#005bff",
     textAlign:'center',
+    justifyContent:"center",
     marginLeft:1,
     marginTop:15,
     marginRight:-20,

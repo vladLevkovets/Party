@@ -1,18 +1,19 @@
-import { StyleSheet, Text,TextInput, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,Dimensions, Alert } from 'react-native';
+import { StyleSheet, Text,TextInput, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,Keyboard,KeyboardAvoidingView, Alert } from 'react-native';
 import { useState,useEffect} from 'react';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
+import { hide } from 'expo-splash-screen';
 
 
 
 
 
 
-export default function Left ({token}) {
+export default function Left ({token,verify_token,partys,setPartys}) {
     const [showList,setShowList]=useState(false)
     const [progress,setProgress]=useState("0%")
-    const [partys,setPartys]=useState([])
+    // const [partys,setPartys]=useState([])
     const [event,setEvent]=useState("")
     const [eventId,setEventId]=useState("")
     const [text,setText]=useState("")
@@ -22,18 +23,19 @@ export default function Left ({token}) {
     
 
   const getEvents =async ()=>{
+   
     console.log(token)
     let data =JWT.decode(token, JWT_SECRET);
     console.log(data)
     let id=data._id
     console.log(id)
-    setPartys([])
+    // setPartys([])
     axios
     .get(`${URL}/events/find/${id}+owner`)
 
     .then((res)=>{
       if (res.data.ok){
-        console.log([...partys, ...res.data.events])
+        console.log([ ...res.data.events])
         
          setPartys([...res.data.events])
   
@@ -41,12 +43,12 @@ export default function Left ({token}) {
     }).catch((error) => {
       console.log(error);
     })
-
+    
   }
 
  useEffect(()=>{
  getEvents()
-},[])
+},[token])
 
 
 
@@ -121,9 +123,7 @@ return todos.map((todo, idx)=>{
 
  const DelTasks =(yes) => {
    console.log(eventId)
-   
-
-  if (yes==="yes") {
+   if (yes==="yes") {
   axios
   .post(`${URL}/todos/delete`, {event_id:eventId})
 
@@ -161,17 +161,19 @@ return todos.map((todo, idx)=>{
 }
 
 const AddOne =()=>{
-    
     console.log(todos,eventId,text,event)
     let data=JWT.decode(token, JWT_SECRET);
     console.log(data,data._id)
     console.log(todos)
+    if (text===""){
+      setNewTask(false)  
+    }else{
   axios  
    
    .post(`${URL}/todos/add`, {
     name:event,
     user_id:data._id,
-    todos:[text],
+    todos:text,
     _id:eventId
     })
    .then((res) => {
@@ -181,6 +183,7 @@ const AddOne =()=>{
         console.log(todos)
         setNewTask(false)
         setText("")
+
         // let data=JWT.decode(token, JWT_SECRET);  
         // console.log(" token after login:",data)
       }
@@ -188,7 +191,7 @@ const AddOne =()=>{
     .catch((error) => {
       console.log(error);
     }) 
-       
+  }   
 }
 
 
@@ -206,46 +209,48 @@ const alarm =() =>{
 
 }
 
-return   showList & newTask
-            ? <View style={styles.single}>
-                    <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
-                    <View style={styles.inputBox}>
+return   showList 
+             ? 
+             <KeyboardAvoidingView style={styles.single} >
+                    <View style={ styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
+                    <View style={ newTask? styles.inputBox : styles.noBox}>
                          <TextInput style={styles.input} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
-                         <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{AddOne()}}>
+                         <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{Keyboard.dismiss();verify_token(); AddOne()}}>
                          <View style={styles.makeTask} >
                          
                          <Image source={require("../assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
                          </View>
                          </TouchableWithoutFeedback>
                          </View>
+                    
                     <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
                     
                     <View style={styles.listBtns}>
-                          <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
-                          <TouchableOpacity onPress={()=>{setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{setShowList(false);setNewTask(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                           
                     </View> 
+                       
+             </KeyboardAvoidingView>
+      //       : showList
+      //         ? <View style={styles.single}>
+      //         <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
+      //         <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
+      //         <View style={styles.listBtns}>
+      //               <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+      //               <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
+      //               <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                     
-             </View>
-            : showList
-              ? <View style={styles.single}>
-              <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
-              <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
-              <View style={styles.listBtns}>
-                    <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
-                    <TouchableOpacity onPress={()=>{setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
-                    <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
-                    
-              </View> 
+      //         </View> 
               
-       </View>
-             
-            : <View style={styles.left}>
+      //  </View>
+          
+            : <View style={styles.left} >
                 <ScrollView style={styles.text}>
                 {showMy()}
                 </ScrollView> 
-                {/* <View style={styles.text}>{showMy()}</View> */}
+               
               </View>
 
 }
@@ -272,13 +277,13 @@ text:{
     width:"100%",
     }, 
 box:{
-    marginTop:10,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",},      
+  textAlign:'center',justifyContent:"center", marginTop:10,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",},      
 task:{
-    paddingTop:9,fontSize:16,width:"90%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",},
+    paddingTop:9,fontSize:16,width:"90%",color:"white",paddingLeft:3 ,borderRadius:30,backgroundColor:"#ff0909",},
 delTask:{
-    textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:30,height:30,borderRadius:20,backgroundColor:"black",color:"white"},
+    textAlign:'center',justifyContent:"center", marginTop:0,marginRight:5,fontSize:20,width:35,height:35,borderRadius:20,backgroundColor:"black",color:"white"},
 delButton:{
-    textAlign:'center',marginTop:2,marginLeft:5,fontSize:17,width:20,height:20,borderRadius:20,backgroundColor:"black",color:"white"},
+  textAlign:'center',marginLeft:2,fontSize:17,width:30,borderRadius:20,backgroundColor:"black",color:"white"},
 single:{
     paddingTop:40,
     backgroundColor:"#ff0000",
@@ -293,32 +298,23 @@ singleTop:{
     height:40,  
     backgroundColor:"#005bff",
     borderRadius:20,
+    textAlign:'center',
+    justifyContent:"center",
    },
 singleName:{
     width:"90%",
     color:"yellow",
     paddingLeft:10,
-    paddingTop:5,
     fontSize:20,
    },
-// singleList:{
-//     textAlign: 'center',
-//     borderRadius:20,
-//     backgroundColor:'#ff00eb',
-//     color: '#cdf104',
-//     fontSize:30,
-//     height:"100%",
-//     width:"100%",
-//   }, 
+
 input :{
     fontSize:16,
     width:"85%",
     paddingLeft:10 ,
     borderRadius:20,
     height:"100%",
-    placeholder:"Task",
     backgroundColor:"#abb7b9",
-    zIndex:2
   },
 inputBox:{
   position:'absolute',
@@ -328,21 +324,25 @@ inputBox:{
   height:"10%",
   flexDirection:"row",
   borderRadius:20,
-  backgroundColor:"#abb7b9"
+  backgroundColor:"#abb7b9",
+  justifyContent:"center"
+},
+noBox:{
+  height:0
 },
 makeTask:{
   textAlign:'center',
+  justifyContent:"center",
   marginTop:10,
   marginRight:0,
   fontSize:20,
-  width:"12%",
-  height:"60%",
+  width:"15%",
+  height:"70%",
   borderRadius:30,
   backgroundColor:"green",
   color:"white"
 },
 buttonPic:{
-  fontSize:20,
   width:"100%",
   height:"100%",
   borderRadius:30,
@@ -371,11 +371,9 @@ listBtns:{
    }, 
 btnsText:{
     width:"80%",
-    height:"100%",
     textAlign:'center',
     fontSize:15,
     color:"white",
-    paddingBottom:5,
     
    },    
 delete:{
@@ -383,6 +381,7 @@ delete:{
     width:"30%",
     height:"60%",
     backgroundColor:"black",
+    justifyContent:"center",
     borderRadius:15,
    },
 back:{
@@ -390,6 +389,7 @@ back:{
     width:"30%",
     height:"60%",
     backgroundColor:"blue",
+    justifyContent:"center",
     borderRadius:15,
    },
 addOne:{
@@ -397,6 +397,7 @@ addOne:{
     width:"30%",
     height:"60%",
     backgroundColor:"green",
+    justifyContent:"center",
     borderRadius:15,
    },  
 party:{
