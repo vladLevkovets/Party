@@ -12,6 +12,7 @@
     "@expo-google-fonts/dev": "^0.2.2",
     "@expo-google-fonts/inter": "^0.2.2",
     "@react-native-async-storage/async-storage": "~1.17.3",
+    "@react-native-community/checkbox": "^0.5.14",
     "assets": "^3.0.1",
     "axios": "^1.1.2",
     "dotenv": "^16.0.3",

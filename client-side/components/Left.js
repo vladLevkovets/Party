@@ -81,8 +81,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
 
 
   const removeTodo = (idx) => {
-    let temp = [...todos]
-
+    let temp = [...todos]  
   axios
    .post(`${URL}/todos/delete`, {_id:temp[idx]._id})
 
@@ -95,9 +94,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
    .catch((error) => {
     console.log(error);
   })
-
-
-  }
+}
 
 
 const showTodos = () => {
@@ -112,7 +109,7 @@ return todos.map((todo, idx)=>{
                   </Text>
                   <View style={styles.delTask}>
                   <TouchableWithoutFeedback
-                      onPress={( ) => removeTodo(idx)}>
+                      onPress={( ) => alarm(idx)}>
                      <Text style={styles.delButton}>X</Text>
                      
                   </TouchableWithoutFeedback>
@@ -121,9 +118,9 @@ return todos.map((todo, idx)=>{
     })
   }
 
- const DelTasks =(yes) => {
+ const DelTasks =() => {
    console.log(eventId)
-   if (yes==="yes") {
+   
   axios
   .post(`${URL}/todos/delete`, {event_id:eventId})
 
@@ -136,7 +133,7 @@ return todos.map((todo, idx)=>{
   }).catch((error) => {
     console.log(error);
   })
-  }
+  
  } 
 
 
@@ -164,7 +161,7 @@ const AddOne =()=>{
     console.log(todos,eventId,text,event)
     let data=JWT.decode(token, JWT_SECRET);
     console.log(data,data._id)
-    console.log(todos)
+    console.log(todos,text)
     if (text===""){
       setNewTask(false)  
     }else{
@@ -173,7 +170,7 @@ const AddOne =()=>{
    .post(`${URL}/todos/add`, {
     name:event,
     user_id:data._id,
-    todos:text,
+    todos:[text],
     _id:eventId
     })
    .then((res) => {
@@ -195,17 +192,26 @@ const AddOne =()=>{
 }
 
 
-const alarm =() =>{
-
+const alarm =(idx) =>{
+  if(idx==="party"){
   Alert.alert("Are you sure?", "This action will delete your party!",[{
     text: "Yes",
     onPress: () => {
-    DelTasks("yes")
+    DelTasks()
     }},
     {
       text: "No",
     },]
-  )
+  )}else{
+    Alert.alert("Are you sure?", "This action will delete this task!",[{
+      text: "Yes",
+      onPress: () => {
+      removeTodo(idx)
+      }},
+      {
+        text: "No",
+      },])
+  }
 
 }
 
@@ -228,23 +234,12 @@ return   showList
                     <View style={styles.listBtns}>
                           <TouchableOpacity onPress={()=>{setShowList(false);setNewTask(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
                           <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
-                          <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={()=>{alarm("party")}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                           
                     </View> 
                        
              </KeyboardAvoidingView>
-      //       : showList
-      //         ? <View style={styles.single}>
-      //         <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
-      //         <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
-      //         <View style={styles.listBtns}>
-      //               <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
-      //               <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
-      //               <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
-                    
-      //         </View> 
-              
-      //  </View>
+    
           
             : <View style={styles.left} >
                 <ScrollView style={styles.text}>

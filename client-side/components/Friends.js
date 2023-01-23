@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,TextInput, Alert, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,TextInput, Alert } from 'react-native';
 import { useState,useEffect} from 'react';
+import CheckBox from '@react-native-community/checkbox';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
@@ -13,6 +14,7 @@ import axios from 'axios';
 export default function Friends ({token,verify_token,showFriends,setShowFriends}) {
 const [friends,setFriends]=useState([])
 const [find,setFind]=useState("")
+const[form,setForm]=useState([])
 const URL = "http://192.168.0.174:4040"
 // const [text,setText]=useState("")
 
@@ -47,6 +49,7 @@ const addFriend = async()=>{
     console.log(nickname)
      let list =friends
      console.log(list)
+     
      list.push({name:find,nickname:find})
      console.log(list)
   axios
@@ -58,6 +61,7 @@ const addFriend = async()=>{
              console.log(res.data)
             if (res.data.ok) {
                 setFriends([...res.data.user.friends])
+                setFind("")
             }
           })
     .catch((error) => {
@@ -69,12 +73,17 @@ const addFriend = async()=>{
 
 const findFriend=() =>{
     console.log(find)
+    let ind=friends.findIndex(man=>man.nickname===find)
+    if(ind!==(-1)){
+      Alert.alert("You have found you friend", "He/she is already in your list")
+      setFind("")
+    }else
     axios
     .get(`${URL}/users/${find}`)
 
     .then((res)=>{
-        console.log(res)
       if (res.data.ok){
+
         Alert.alert("You have found you friend", "Whant to add he/she to friendlist",[{
             text: "Yes",
             onPress: () => {    
@@ -93,45 +102,104 @@ const findFriend=() =>{
     }).catch((error) => {
       console.log(error);
     })
+}
+
+const removeFriend = (idx) => {
+  let user =JWT.decode(token, JWT_SECRET);
+  console.log(user)
+  let nickname=user.nickname
+  console.log(nickname)
+  let list = [...friends] 
+  list.splice(idx,1) 
+axios
+ .post(`${URL}/users/update`, {
+  nickname:nickname,
+  friends:list
+  }) 
+
+ .then ((res)=>{
+  if (res.data.ok)
+  setFriends([...list])
+  
+ })
+ .catch((error) => {
+  console.log(error);
+})
+
+
 
 }
 
-
-// const addFriend = async()=>{
-//     let user =JWT.decode(token, JWT_SECRET);
-//     console.log(data)
-//     let nickname=user.nickname
-//     console.log(user.nickname)
-//      let list =[...friends]
-//      console.log(list)
-//      list.push({name:find,nickname:find})
-//   axios
-//      .post(`${URL}/users/update`, {
-//         nickname:nickname,
-//         friends:list
-//         }) 
-//     .then((res) => {
+const alarm =(idx) =>{
   
-//             if (res.data.ok) {
-//                 setFriends([...res.data.friends])
-//             }
-//           })
-//     .catch((error) => {
-//             console.log(error);
-//           })
-        
-// }
+  Alert.alert("Are you sure?", "This action will remove your friend from list",[{
+    text: "Yes",
+    onPress: () => {
+    removeFriend(idx)
+    }},
+    {
+      text: "No",
+    },]
+  )}
+
+const select =(idx)=>{
+  let temp=[...friends]
+console.log(idx)
+if(idx>=0){  
+  temp[idx].status=!temp[idx].status
+  setFriends(temp)
+  console.log(friends)
+if (temp[idx].status==true){
+  form.push(temp[idx].nickname)
+  console.log(form)
+}else{
+  let i=form.indexOf(temp[idx].nickname)
+  form.splice(i,1)
+  console.log(i,form)
+}
+}else{
+  console.log(form)
+  if (form.length>0){
+  temp.forEach(el=>{
+  el.status=false
+  let i=form.indexOf(el.nickname)  
+  form.splice([i,1])
+  console.log(form)})
+  setFriends(temp)
+  }else{
+    console.log(form)
+    temp.forEach(el=>{
+      el.status=true
+      form.push(el.nickname)
+    })   
+  setFriends(temp)
+  console.log(form)
+  }
+}
+}
 
 const friendList = () => {
     console.log(friends)
    if (friends.length !==0){
    return friends.map((friend, idx)=>{
-      return  <View style={styles.box} key={idx}>
-                  <Text
+     return  <View style={friend.status ?styles.selected :styles.box} key={idx}> 
+                  <View style={styles.taskBox}>
+                  <TouchableOpacity onPress={()=>select(idx)}>
+                  <Text 
                     numberOfLines={1} 
-                    style={styles.task} >{friend.name}
+
+                    style={friend.status ?styles.selTask :styles.task} >{friend.name}
                   </Text>
-                 
+                  </TouchableOpacity>
+                  </View>
+                    
+                  <View style={styles.delTask}>
+                  <TouchableWithoutFeedback
+                      onPress={( ) => alarm(idx)}>
+                     <Text style={styles.delButton}>X</Text>
+                     
+                  </TouchableWithoutFeedback>
+                  </View>
               </View>
     })
   }  
@@ -158,6 +226,7 @@ return <View style={styles.single}>
         </ScrollView> 
         <View style={styles.listBtns}>
         <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>select()} style={styles.back}><Text style={styles.btnsText}>Mark all</Text></TouchableOpacity>
         <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>SENT TO</Text></TouchableOpacity>
         </View>    
 
@@ -252,11 +321,18 @@ const styles = StyleSheet.create({
         marginTop:10,
         }, 
     box:{
-        marginTop:0,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",
-    },      
+        marginTop:5,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",
+    }, 
+    selected:{
+      marginTop:5,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"green",
+  },   
+    taskBox:{width:"90%",height:40,}, 
     task:{
-        paddingTop:9,fontSize:16,width:"90%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",
+        paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",
     },
+    selTask:{
+      paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"green",
+  },
     inputBox:{ 
         width:"100%",
         height:"10%",
@@ -310,6 +386,25 @@ const styles = StyleSheet.create({
         borderRadius:15,
         justifyContent:"center",
         textAlign:'center'
-    },     
+    }, 
+    delTask:{
+      textAlign:'center',
+      justifyContent:"center",
+       marginTop:1,
+       marginRight:5,
+       fontSize:20,
+       width:35,
+       height:35,
+       borderRadius:20,
+       backgroundColor:"black",
+       color:"white"},
+  delButton:{
+    textAlign:'center',
+    marginLeft:2,
+    fontSize:17,
+    width:30,
+    borderRadius:20,
+    backgroundColor:"black",
+    color:"white"},    
     
 })  
