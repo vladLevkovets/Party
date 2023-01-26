@@ -16,7 +16,7 @@ export default function Right ({token,verify_token,partys}) {
     const URL = "http://192.168.0.174:4040" 
     const styles= {
       right:{
-        paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:"86%",width:"100%",backgroundColor: '#10ff00',},      
+        paddingHorizontal:"3%",paddingTop:0.02*vert,paddingBottom:0.04*vert,palignItems:'center',justifyContent: 'center',height:"84%",width:"100%",backgroundColor: '#10ff00',},      
       text:{
         textAlign: 'center',borderRadius:20,backgroundColor:'#ff00eb',color: '#cdf104',fontSize:30,height:"100%",width:"100%",},
       form:{

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback ,Dimensions,  } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView,TouchableOpacity, TouchableWithoutFeedback ,Dimensions,  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import React from "react"
@@ -8,18 +8,18 @@ import LoginReg from "./components/LoginReg.js"
 import Left from "./components/Left.js"
 import Mid from "./components/Mid.js"
 import Right from "./components/Right.js"
+import Friends from "./components/Friends.js"
 import axios from "axios";
 import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync()
-import JWT from 'expo-jwt';
-import {JWT_SECRET} from "./config.js"
+// import JWT from 'expo-jwt';
+// import {JWT_SECRET} from "./config.js"
 
 
 export default function App() {
   const hor = Dimensions.get('window').width;
   const vert = Dimensions.get('window').height;
   const [token,setToken]=useState(null)
-  // const {data,setData}=useState({})
   const Pink = require("./assets/Pink—Get-The-Party-Started.mp3")
   const Smoke= require("./assets/Smokie-What_can_i_do.mp3")
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
@@ -28,10 +28,11 @@ export default function App() {
   const [isMuted,setIsMuted]=useState(true)
   const [event,setEvent]=useState("")
   const [partys,setPartys]=useState([])
+  const [showFriends,setShowFriends]=useState(false)
   const [checked,setChecked]=useState(false)
   const [reg,setReg]=useState(false)
   const [logged,setLogged]=useState(null)
-  
+  const [list,setList]=useState(false)
 
 async function playMusic(url) {
     if (music){
@@ -138,14 +139,18 @@ useEffect(()=>{
 return (
   <View style={[styles.container, {minHeight: vert}]}  >
       
-    { checked && logged
+    { checked && logged && showFriends
     ? 
-    
-     <View style={[styles.container,{minHeight: vert}]}>
-   
-          <Text style={[styles.statusBar,{minHeight: 0.05*vert}]}></Text>
-          <SafeAreaView style={[styles.top,{minHeight: 0.1*vert}]}>
-
+    <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList}  />
+     : checked && logged
+      ?<View style={[styles.container,{minHeight: vert}]}>
+          
+          <Text style={[styles.statusBar,{minHeight: 0.06*vert}]}></Text>
+          <SafeAreaView style={[styles.top,{minHeight: 0.13*vert}]}>
+          <View style={[{height:0.04*vert},{width:1*hor}]}>
+          <TouchableOpacity onPress={()=>{setShowFriends(true)}} style={styles.delete}><Text style={styles.btnsText}>MENU</Text></TouchableOpacity> 
+          </View>
+          <View style={[styles.tabs,{minHeight:0.1*vert}]}>
           <View style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
           <TouchableWithoutFeedback style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
                    <Text style={styles.tabLeftName} onPress={()=>{ verify_token();  playMusic(Help);setTab("left")}}>My lists </Text>
@@ -164,11 +169,11 @@ return (
                    <Text style={styles.tabRightName} onPress={()=>{ verify_token(); playMusic(Pink);setTab("right")}}>New one</Text>
               </TouchableWithoutFeedback>
           </View>
-
+          </View>
           </SafeAreaView>  
         { tab==="left" 
       
-              ?  <Left token={token} partys={partys} setPartys={setPartys} verify_token={verify_token}/>
+              ?  <Left token={token} partys={partys} setPartys={setPartys} verify_token={verify_token}  setList={setList} />
           
               :tab==="mid"
                       ? <Mid  token={token} logout={logout} verify_token={verify_token}/>
@@ -224,10 +229,31 @@ backgroundColor:"black",
     
     width:"100%",
     backgroundColor:"#e4ff00",
+    // flexDirection:"row",
+    
+  },
+  delete:{
+    marginTop:"0.5%",
+    marginLeft:"65%",
+    width:"30%",
+    height:"80%",
+    backgroundColor:"black",
+    borderRadius:15,
+    justifyContent:"center",
+   },
+  btnsText:{
+    width:"100%",      
+    fontSize:15,
+    color:"white",
+    textAlign:'center'
+  },  
+  tabs:{
+    height:"9%",
+    width:"100%",
+    backgroundColor:"#e4ff00",
     flexDirection:"row",
     
   },
- 
  
   tabLeft:{
     paddingTop:9,
@@ -235,7 +261,7 @@ backgroundColor:"black",
     textAlign:'center',
     justifyContent:"center",
     marginLeft:1,
-    marginTop:15,
+    marginTop:1,
     marginRight:-20,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
@@ -249,7 +275,7 @@ backgroundColor:"black",
     textAlign:'center',
     justifyContent:"center",
     marginLeft:1,
-    marginTop:15,
+    marginTop:1,
     marginRight:-20,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
@@ -261,7 +287,7 @@ backgroundColor:"black",
     paddingTop:9,
     color:"#10ff00",
     textAlign:'center',
-    marginTop:15,
+    marginTop:1,
     marginRight:-20,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
@@ -275,7 +301,7 @@ backgroundColor:"black",
     color:"#ff0000",
     textAlign:'center',
     marginRight:1,
-    marginTop:15,
+    marginTop:1,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
     backgroundColor: '#10ff00',
@@ -287,7 +313,7 @@ backgroundColor:"black",
     color:"#ff0000",
     textAlign:'center',
     marginRight:1,
-    marginTop:15,
+    marginTop:1,
     borderTopLeftRadius:20,
     borderTopRightRadius:20,
     backgroundColor: '#10ff00',

@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Image,TextInput, Alert, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useState,useEffect} from 'react';
-import CheckBox from '@react-native-community/checkbox';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
@@ -11,16 +10,16 @@ import axios from 'axios';
 
 
 
-export default function Friends ({token,verify_token,showFriends,setShowFriends}) {
+export default function Friends ({token,verify_token,showFriends,setShowFriends,list,setList,eventId}) {
 const [friends,setFriends]=useState([])
 const [find,setFind]=useState("")
-const[form,setForm]=useState([])
+const [contact,setContact]=useState("")
+const [prompt,setPrompt]=useState(false)
 const URL = "http://192.168.0.174:4040"
-// const [text,setText]=useState("")
+const [newUserId,setNewUserId]=useState("")
+const [form,setForm]=useState([])
 
-
-
-
+console.log(list)
 const getFriends= async  ()=>{
   
     let data =JWT.decode(token, JWT_SECRET);
@@ -43,39 +42,60 @@ const getFriends= async  ()=>{
 }
 
 const addFriend = async()=>{
+  debugger
+  if(prompt && contact===""){
+    Alert.alert("Save as ...","type contact name")
+  }else {
     let user =JWT.decode(token, JWT_SECRET);
     console.log(user)
     let nickname=user.nickname
     console.log(nickname)
-     let list =friends
-     console.log(list)
-     
-     list.push({name:find,nickname:find})
-     console.log(list)
+    let list =friends
+    console.log(list)
+    console.log(newUserId) 
+    if (prompt){
+    list.push({name:contact,nickname:find,user_id:newUserId})
+    console.log(list)
+    }else{
+      list.push({name:find,nickname:find,user_id:newUserId})
+      console.log(list) 
+    }
+
   axios
      .post(`${URL}/users/update`, {
         nickname:nickname,
         friends:list
+      
         }) 
     .then((res) => {
              console.log(res.data)
             if (res.data.ok) {
                 setFriends([...res.data.user.friends])
                 setFind("")
+                setContact("")
+                setPrompt(false)
+                
             }
           })
     .catch((error) => {
             console.log(error);
           })
-      
+  }   
 }
 
 
 const findFriend=() =>{
-    console.log(find)
+  debugger
+    let user =JWT.decode(token, JWT_SECRET);
+  if (user.nickname===find){
+      Alert.alert("It is YOUR name", "try to find some friend")
+      setFind("")
+    }else{
+    console.log(friends,find)
     let ind=friends.findIndex(man=>man.nickname===find)
+    console.log(ind);
     if(ind!==(-1)){
-      Alert.alert("You have found you friend", "He/she is already in your list")
+      Alert.alert("You have found you friend", `He/she is already in your list as ${friends[ind].name} `)
       setFind("")
     }else
     axios
@@ -83,16 +103,24 @@ const findFriend=() =>{
 
     .then((res)=>{
       if (res.data.ok){
-
-        Alert.alert("You have found you friend", "Whant to add he/she to friendlist",[{
+        console.log(res.data.user._id)
+            setNewUserId(res.data.user._id)
+            console.log(newUserId)
+        Alert.alert("You have found your friend", `want to save contact as ${find} ?`,[{
             text: "Yes",
-            onPress: () => {    
-            addFriend(find)
+            onPress: () => { 
+            addFriend()
             }},
+            {
+              text: "change contact name",
+              onPress: () => { 
+              setPrompt(true)
+              }},
             {
               text: "No",
               onPress: ()=> {
                 setFind("")
+                setNewUserId("")
               }
             },]) 
   
@@ -102,6 +130,7 @@ const findFriend=() =>{
     }).catch((error) => {
       console.log(error);
     })
+  }
 }
 
 const removeFriend = (idx) => {
@@ -149,28 +178,29 @@ if(idx>=0){
   temp[idx].status=!temp[idx].status
   setFriends(temp)
   console.log(friends)
-if (temp[idx].status==true){
-  form.push(temp[idx].nickname)
-  console.log(form)
-}else{
-  let i=form.indexOf(temp[idx].nickname)
+  if (temp[idx].status==true){
+    form.push(temp[idx].user_id)
+     console.log(form)
+  }else{
+  let i=form.indexOf(temp[idx].user_id)
   form.splice(i,1)
   console.log(i,form)
-}
+  
+  }
 }else{
   console.log(form)
   if (form.length>0){
-  temp.forEach(el=>{
-  el.status=false
-  let i=form.indexOf(el.nickname)  
-  form.splice([i,1])
-  console.log(form)})
-  setFriends(temp)
+     temp.forEach(el=>{
+     el.status=false
+     let i=form.indexOf(el.user_id)  
+     form.splice([i,1])
+     console.log(form)})
+     setFriends(temp)
   }else{
     console.log(form)
     temp.forEach(el=>{
       el.status=true
-      form.push(el.nickname)
+      form.push(el.user_id)
     })   
   setFriends(temp)
   console.log(form)
@@ -205,13 +235,26 @@ const friendList = () => {
   }  
   }
 
-  useEffect(()=>{
-    if (showFriends){
+useEffect(()=>{
+    if (showFriends ){
     getFriends()}
-   },[showFriends]) 
+},[showFriends]) 
 
+
+
+const share=()=>{
+    let list=[...friends]
+
+   axios
+      .post(`${URL}/events/update`, {
+        event_id:eventId,
+        users:list
+        }) 
+
+}
 
 return <View style={styles.single}>
+  
        <View style={styles.inputBox}>
        <TextInput style={styles.input} placeholder="find a friend" onChangeText={(text)=>setFind(text)} value={find} ></TextInput>
        <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{findFriend()}}>
@@ -221,16 +264,32 @@ return <View style={styles.single}>
                          </View>
         </TouchableWithoutFeedback >                 
        </View>
+       
+       <View style={prompt ?styles.prompt :{height:0}}>
+       <TextInput style={prompt?styles.input :{width:0}} placeholder="Contact name" onChangeText={(text)=>setContact(text)} defaultValue={find} value={contact} ></TextInput>
+          <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{Keyboard.dismiss();addFriend()}}>
+                         <View style={styles.makeTask} >
+                         
+                         <Image source={require("../assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
+                         </View>
+          </TouchableWithoutFeedback >                 
+       </View>     
+  
        <ScrollView style={styles.text}>
                 {friendList()}
         </ScrollView> 
-        <View style={styles.listBtns}>
+        {/* {list */}
+        <View style={list?styles.listBtns :styles.oneBtn }>
         <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
-        <TouchableOpacity onPress={()=>select()} style={styles.back}><Text style={styles.btnsText}>Mark all</Text></TouchableOpacity>
-        <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>SENT TO</Text></TouchableOpacity>
-        </View>    
+        <TouchableOpacity onPress={()=>select()} style={list ?styles.mark :{width:0}}><Text style={styles.btnsText }>MARK ALL</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>share()} style={list ?styles.sent :{width:0}}><Text style={styles.btnsText}>SENT TO</Text></TouchableOpacity>
+        </View>
 
-
+         {/* :<View style={styles.oneBtn}>
+         <TouchableOpacity onPress={()=>{setShowFriendList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+        
+         </View>
+        } */}
 
 
 
@@ -263,6 +322,7 @@ return <View style={styles.single}>
 
 
 </View>
+       
 
 
 
@@ -340,6 +400,15 @@ const styles = StyleSheet.create({
         borderRadius:20,
         backgroundColor:"#abb7b9"
       },
+    prompt: { 
+      marginTop:2,
+      width:"100%",
+      height:"10%",
+      flexDirection:"row",
+      borderRadius:20,
+      backgroundColor:"#abb7b9",
+      
+    }, 
     input :{
         fontSize:16,
         width:"85%",
@@ -371,10 +440,17 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         height:40,
         width:"100%"
-       }, 
+       },
+    oneBtn:{
+        marginTop:10,
+        justifyContent:"center",
+        flexDirection:"row",
+        height:40,
+        width:"100%"
+       },    
     btnsText:{
         width:"80%",      
-        fontSize:15,
+        fontSize:14,
         color:"white",
         textAlign:'center'
     }, 
@@ -382,10 +458,28 @@ const styles = StyleSheet.create({
         paddingLeft:"5%",
         width:"30%",
         height:"60%",
-        backgroundColor:"blue",
+        backgroundColor:"grey",
         borderRadius:15,
         justifyContent:"center",
         textAlign:'center'
+    }, 
+    mark:{
+      paddingLeft:"5%",
+      width:"30%",
+      height:"60%",
+      backgroundColor:"green",
+      borderRadius:15,
+      justifyContent:"center",
+      textAlign:'center'
+    },
+    sent:{
+    paddingLeft:"5%",
+    width:"30%",
+    height:"60%",
+    backgroundColor:"blue",
+    borderRadius:15,
+    justifyContent:"center",
+    textAlign:'center'
     }, 
     delTask:{
       textAlign:'center',

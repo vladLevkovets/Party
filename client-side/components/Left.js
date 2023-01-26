@@ -3,6 +3,7 @@ import { useState,useEffect} from 'react';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
+import Friends from "./Friends.js"
 import { hide } from 'expo-splash-screen';
 
 
@@ -19,8 +20,10 @@ export default function Left ({token,verify_token,partys,setPartys}) {
     const [text,setText]=useState("")
     const [todos, setTodos] = useState([])
     const [newTask, setNewTask]= useState(false)
+    const [showFriends,setShowFriends]=useState(false)
+    const [list,setList]=useState(false)
     const URL = "http://192.168.0.174:4040"
-    
+  
 
   const getEvents =async ()=>{
    
@@ -56,7 +59,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
     
      return   partys.map((el,i)=>{
                   
-              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{makeTodos(el._id,el.name)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
+              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{makeTodos(el._id,el.name),setList(true)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
           })
     }
 
@@ -215,7 +218,11 @@ const alarm =(idx) =>{
 
 }
 
-return   showList 
+return  showList && showFriends 
+        ? 
+        <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList} eventId={eventId} /> 
+        
+        :showList 
              ? 
              <KeyboardAvoidingView style={styles.single} >
                     <View style={ styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
@@ -234,6 +241,7 @@ return   showList
                     <View style={styles.listBtns}>
                           <TouchableOpacity onPress={()=>{setShowList(false);setNewTask(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
                           <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{setShowFriends(true)}} style={styles.invite}><Text style={styles.btnsText}>INVITE</Text></TouchableOpacity>
                           <TouchableOpacity onPress={()=>{alarm("party")}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                           
                     </View> 
@@ -256,9 +264,9 @@ left:{
     paddingHorizontal:"3%",
     paddingTop:"4%",
     paddingBottom:"7%",
-    palignItems:'center',
+    alignItems:'center',
     justifyContent: 'center',
-    height:"86%",
+    height:"84%",
     width:"100%",
     backgroundColor: "#ff0000",
     },
@@ -268,7 +276,7 @@ text:{
     backgroundColor:'#ff00eb',
     color: '#cdf104',
     fontSize:30,
-    height:"100%",
+    height:"90%",
     width:"100%",
     }, 
 box:{
@@ -367,13 +375,13 @@ listBtns:{
 btnsText:{
     width:"80%",
     textAlign:'center',
-    fontSize:15,
+    fontSize:14,
     color:"white",
     
    },    
 delete:{
     paddingLeft:"5%",
-    width:"30%",
+    width:"24%",
     height:"60%",
     backgroundColor:"black",
     justifyContent:"center",
@@ -381,15 +389,23 @@ delete:{
    },
 back:{
     paddingLeft:"5%",
-    width:"30%",
+    width:"24%",
+    height:"60%",
+    backgroundColor:"grey",
+    justifyContent:"center",
+    borderRadius:15,
+   },
+invite:{
+    paddingLeft:"5%",
+    width:"24%",
     height:"60%",
     backgroundColor:"blue",
     justifyContent:"center",
     borderRadius:15,
-   },
+   },   
 addOne:{
     paddingLeft:"5%",
-    width:"30%",
+    width:"24%",
     height:"60%",
     backgroundColor:"green",
     justifyContent:"center",

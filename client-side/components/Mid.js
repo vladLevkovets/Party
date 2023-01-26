@@ -143,7 +143,7 @@ mid:{
     paddingBottom:"7%",
     palignItems:'center',
     justifyContent: 'center',
-    height:"86%",
+    height:"84%",
     width:"100%",
     backgroundColor: "#005bff",
     },
@@ -185,6 +185,7 @@ singleName:{
     fontSize:20,
    },   
 singleText:{
+    height:"90%",
     width:"90%",
     fontSize:15,
    },
@@ -198,8 +199,7 @@ singleList:{
     marginTop:5,
     marginBottom:10,
    },
-   listBtns:{
-    marginTop:10,
+listBtns:{
     justifyContent:"space-around",
     flexDirection:"row",
     height:40,
@@ -218,7 +218,7 @@ back:{
     backgroundColor:"blue",
     borderRadius:15,
     justifyContent:"center",
-    textAlign:'center'
+
 },     
 delete:{
     paddingLeft:"5%",

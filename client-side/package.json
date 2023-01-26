@@ -30,6 +30,7 @@
     "react-native-contacts": "^7.0.5",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-permissions": "^3.6.1",
+    "react-native-prompt": "^1.0.0",
     "react-native-sound": "^0.11.2",
     "react-native-webview": "11.23.0"
   },
