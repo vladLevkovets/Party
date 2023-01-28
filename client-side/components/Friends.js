@@ -10,7 +10,7 @@ import axios from 'axios';
 
 
 
-export default function Friends ({token,verify_token,showFriends,setShowFriends,list,setList,eventId}) {
+export default function Friends ({token,verify_token,showFriends,setShowFriends,list,eventId,partys,getEvents}) {
 const [friends,setFriends]=useState([])
 const [find,setFind]=useState("")
 const [contact,setContact]=useState("")
@@ -19,7 +19,7 @@ const URL = "http://192.168.0.174:4040"
 const [newUserId,setNewUserId]=useState("")
 const [form,setForm]=useState([])
 
-console.log(list)
+console.log(partys)
 const getFriends= async  ()=>{
   
     let data =JWT.decode(token, JWT_SECRET);
@@ -41,8 +41,7 @@ const getFriends= async  ()=>{
     })
 }
 
-const addFriend = async()=>{
-  debugger
+const addFriend = async(id)=>{
   if(prompt && contact===""){
     Alert.alert("Save as ...","type contact name")
   }else {
@@ -57,7 +56,7 @@ const addFriend = async()=>{
     list.push({name:contact,nickname:find,user_id:newUserId})
     console.log(list)
     }else{
-      list.push({name:find,nickname:find,user_id:newUserId})
+      list.push({name:find,nickname:find,user_id:id})
       console.log(list) 
     }
 
@@ -85,7 +84,6 @@ const addFriend = async()=>{
 
 
 const findFriend=() =>{
-  debugger
     let user =JWT.decode(token, JWT_SECRET);
   if (user.nickname===find){
       Alert.alert("It is YOUR name", "try to find some friend")
@@ -108,8 +106,8 @@ const findFriend=() =>{
             console.log(newUserId)
         Alert.alert("You have found your friend", `want to save contact as ${find} ?`,[{
             text: "Yes",
-            onPress: () => { 
-            addFriend()
+            onPress: () => {   
+            addFriend(res.data.user._id)
             }},
             {
               text: "change contact name",
@@ -120,7 +118,6 @@ const findFriend=() =>{
               text: "No",
               onPress: ()=> {
                 setFind("")
-                setNewUserId("")
               }
             },]) 
   
@@ -172,6 +169,7 @@ const alarm =(idx) =>{
   )}
 
 const select =(idx)=>{
+  
   let temp=[...friends]
 console.log(idx)
 if(idx>=0){  
@@ -179,10 +177,10 @@ if(idx>=0){
   setFriends(temp)
   console.log(friends)
   if (temp[idx].status==true){
-    form.push(temp[idx].user_id)
+    form.push({user_id:temp[idx].user_id,status:"invited"})
      console.log(form)
   }else{
-  let i=form.indexOf(temp[idx].user_id)
+  let i=form.findIndex(el=>el.user_id===temp[idx].user_id)
   form.splice(i,1)
   console.log(i,form)
   
@@ -192,23 +190,25 @@ if(idx>=0){
   if (form.length>0){
      temp.forEach(el=>{
      el.status=false
-     let i=form.indexOf(el.user_id)  
-     form.splice([i,1])
-     console.log(form)})
+    //  let i=form.indexOf(el.user_id)  
+    //  form.splice([i,1])
+    console.log(form)})
+     setForm([])
      setFriends(temp)
   }else{
     console.log(form)
     temp.forEach(el=>{
       el.status=true
-      form.push(el.user_id)
+      form.push({user_id:el.user_id,status:"invited"})
     })   
   setFriends(temp)
-  console.log(form)
+  console.log(form,friends)
   }
 }
 }
 
 const friendList = () => {
+  
     console.log(friends)
    if (friends.length !==0){
    return friends.map((friend, idx)=>{
@@ -243,14 +243,32 @@ useEffect(()=>{
 
 
 const share=()=>{
-    let list=[...friends]
-
+  
+  console.log(partys,eventId)
+  let i=partys.findIndex(el=>el._id===eventId)
+  console.log(partys[i].users)
+  let list =[] 
+  form.forEach(el=>{
+    if(partys[i].users.findIndex(man=>man.user_id===el.user_id)===-1){
+       list.push(el)
+    }
+  }) 
+  console.log (list)
    axios
       .post(`${URL}/events/update`, {
-        event_id:eventId,
+        _id:eventId,
         users:list
         }) 
-
+        
+        .then ((res)=>{
+          if (res.data.ok)
+          getEvents()
+          setShowFriends(false)
+          Alert.alert("Your invitation send")
+          
+         })
+         .catch((error) => {
+          console.log(error);})
 }
 
 return <View style={styles.single}>

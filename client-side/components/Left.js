@@ -26,7 +26,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
   
 
   const getEvents =async ()=>{
-   
+    
     console.log(token)
     let data =JWT.decode(token, JWT_SECRET);
     console.log(data)
@@ -37,6 +37,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
     .get(`${URL}/events/find/${id}+owner`)
 
     .then((res)=>{
+      
       if (res.data.ok){
         console.log([ ...res.data.events])
         
@@ -68,6 +69,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
     .get(`${URL}/todos/find/${event_id}`)
 
     .then((res)=>{
+      
       if (res.data.ok){
         console.log(res)
         console.log(res.data.tasks)
@@ -101,6 +103,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
 
 
 const showTodos = () => {
+    
     console.log(todos)
     console.log(event)
     console.log(eventId)
@@ -220,7 +223,7 @@ const alarm =(idx) =>{
 
 return  showList && showFriends 
         ? 
-        <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList} eventId={eventId} /> 
+        <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList} eventId={eventId} partys={partys} getEvents={getEvents}/> 
         
         :showList 
              ? 

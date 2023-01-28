@@ -34,10 +34,18 @@ class EventsCons {
         let data=req.params.data.split("+")
         console.log(data)
         try {
+          if(data[1]==="owner"){
           console.log(`${data}`)
           const events = await EventsModels.find({users:{ $elemMatch: {user_id:`${data[0]}`,status:`${data[1]}`}}});
           console.log(events)
           res.json({ok:true,events});
+        }else{
+          const invitations = await EventsModels.find({users:{ $elemMatch: {user_id:`${data[0]}`,status:`${data[1]}`}}});
+          console.log(invitations)
+          const partys = await EventsModels.find({users:{ $elemMatch: {user_id:`${data[0]}`,status:`${data[2]}`}}});
+          console.log(partys)
+          res.json({ok:true,invitations,partys});
+        }
         } catch (error) {
           console.log(error)
           res.json({error} );
@@ -72,6 +80,26 @@ class EventsCons {
         }
     }
 
+    async update(req,res){
+       try {
+        const event= await EventsModels.findOne({_id:req.body._id})
+        let num = event.users[0].user_id
+        console.log(event)
+        if(num=== "63c923dd3363018ec3fd195e"){console.log("DA")}
+        let chacked=[]
+        
+         
+        let list=[...event.users,...req.body.users]
+        console.log(list)
+        const send = await EventsModels.updateOne({_id:req.body._id},{users:list})
+        console.log(send)
+        console.log(list)
+        res.json({ok:true})
+      }
+      catch (error) {
+        res.json({ error });
+      }
+    } 
 
 
 
@@ -81,8 +109,7 @@ class EventsCons {
 
 
 
-
-    }
+}
       module.exports = new EventsCons();
 
 

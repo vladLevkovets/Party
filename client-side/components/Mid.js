@@ -13,6 +13,7 @@ export default function Left ({token,logout,verify_token}) {
     const [showList,setShowList]=useState(false)
     const [progress,setProgress]=useState("0%")
     const [partys,setPartys]=useState([])
+    const [invited,setInvited]=useState([])
     const [event,setEvent]=useState("")
     const [todos,setTodos]=useState([])
     const [showFriends,setShowFriends]=useState(false)
@@ -26,14 +27,13 @@ export default function Left ({token,logout,verify_token}) {
     console.log(id)
 
     axios
-    .get(`${URL}/events/find/${id}+owner`)
+    .get(`${URL}/events/find/${id}+invited+guest`)
 
     .then((res)=>{
-      if (res.data.ok){
-        console.log([...partys, ...res.data.events])
-        
-         setPartys([...partys, ...res.data.events])
-
+      if (res.data.ok){ 
+        console.log(res.data)       
+         setPartys([ ...res.data.partys])
+         setInvited([...res.data.invitations])
       }
     }).catch((error) => {
       console.log(error);
@@ -53,11 +53,19 @@ export default function Left ({token,logout,verify_token}) {
      return   partys.map((el,i)=>{
                   
               return <TouchableOpacity key={i} style={styles.party} onPress={()=>{makeTodos(el._id,el.name)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
-          })
+              })
+              
     }
-
-  const makeTodos =async(event_id,event)=>{
-
+    
+    const showAnother=()=>{
+      return   invited.map((el,i)=>{
+                  
+        return <TouchableOpacity key={i} style={styles.waiting} onPress={()=>{makeTodos(el._id,el.name)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{progress}</Text></TouchableOpacity>
+        })
+    }
+  
+  
+    const makeTodos =async(event_id,event)=>{
     axios
     .get(`${URL}/todos/find/${event_id}`)
 
@@ -128,6 +136,7 @@ return   showList && showFriends
 
             : <View style={styles.mid}>
                 <ScrollView style={styles.text}>
+                {showAnother()}
                 {showMy()}
                 </ScrollView> 
                 {/* <View style={styles.text}>{showMy()}</View> */}
@@ -235,9 +244,18 @@ party:{
     justifyContent:"space-between",
     width:"100%",
     height:60,
-    backgroundColor:"blue",
+    backgroundColor:"green",
     borderRadius:30,
   },
+waiting:{
+    marginTop:5,
+    flexDirection:'row',
+    justifyContent:"space-between",
+    width:"100%",
+    height:60,
+    backgroundColor:"gray",
+    borderRadius:30,
+  }, 
   eventName:{
     marginTop:10,
     paddingTop:0,
