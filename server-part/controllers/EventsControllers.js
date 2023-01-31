@@ -81,20 +81,25 @@ class EventsCons {
     }
 
     async update(req,res){
+        let list=[]
        try {
-        const event= await EventsModels.findOne({_id:req.body._id})
-        let num = event.users[0].user_id
-        console.log(event)
-        if(num=== "63c923dd3363018ec3fd195e"){console.log("DA")}
-        let chacked=[]
-        
-         
-        let list=[...event.users,...req.body.users]
+        if(req.body.version==="add"){
+        const event= await EventsModels.findOne({_id:req.body._id})         
+        list=[...event.users,...req.body.users]
         console.log(list)
         const send = await EventsModels.updateOne({_id:req.body._id},{users:list})
         console.log(send)
         console.log(list)
         res.json({ok:true})
+      }else if (req.body.version==="change"){
+        list=[...req.body.users]
+        console.log(list)
+        const send = await EventsModels.updateOne({_id:req.body._id},{users:list})
+        console.log(send)
+        console.log(list)
+        res.json({ok:true})
+
+      }
       }
       catch (error) {
         res.json({ error });

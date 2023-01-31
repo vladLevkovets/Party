@@ -257,7 +257,8 @@ const share=()=>{
    axios
       .post(`${URL}/events/update`, {
         _id:eventId,
-        users:list
+        users:list,
+        version:"add"
         }) 
         
         .then ((res)=>{

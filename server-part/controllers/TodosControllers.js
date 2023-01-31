@@ -16,7 +16,7 @@ async add(req,res){
       else{
       try{ 
       if (!_id){
-      const party = await EventsModels.create({name,users:[{user_id,status:"owner"}]})
+      const party = await EventsModels.create({name,users:[{user_id,status:"invited"}]})
       console.log(party)
       id=party._id
       }
