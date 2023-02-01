@@ -177,7 +177,8 @@ const AddOne =()=>{
     name:event,
     user_id:data._id,
     todos:[text],
-    _id:eventId
+    _id:eventId,
+    version:"make"
     })
    .then((res) => {
 

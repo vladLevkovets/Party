@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView,TouchableOpacity, TouchableWithoutFeedback ,Dimensions,  } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView,TouchableOpacity, TouchableWithoutFeedback ,Dimensions,ImageBackground  } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import React from "react"
@@ -25,7 +25,8 @@ export default function App() {
   const Help= require("./assets/The_Beatles_-_Help_(Jesusful.com).mp3")
   const [music, setMusic] = useState()
   const [tab,setTab]=useState("left")
-  const [isMuted,setIsMuted]=useState(true)
+  const [menu,setMenu]=useState(false)
+  const [isMuted,setIsMuted]=useState(false)
   const [event,setEvent]=useState("")
   const [partys,setPartys]=useState([])
   const [showFriends,setShowFriends]=useState(false)
@@ -38,11 +39,13 @@ async function playMusic(url) {
     if (music){
       music.stopAsync()
       }
+    if (isMuted){
+    }else{
     const { sound} = await Audio.Sound.createAsync(url);
     setMusic(sound);
-    sound.setVolumeAsync(1)
+    sound.setVolumeAsync(1) 
     sound.playAsync ()
-    console.log('Playing Sound');
+    console.log('Playing Sound');}
 } 
  
 const   getToken = async () => {
@@ -104,6 +107,10 @@ useEffect(() => {
      getToken()
 }, []);
 
+useEffect(() => {
+  playMusic()
+}, [isMuted]);
+
 const verify_token = async () => {
   console.log("cheking token")
   try {
@@ -138,9 +145,9 @@ useEffect(()=>{
 
 return (
   <View style={[styles.container, {minHeight: vert}]}  >
-      
-    { checked && logged && showFriends
-    ? 
+   { 
+     checked && logged && showFriends
+     ? 
     <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList}  />
      : checked && logged
       ?<View style={[styles.container,{minHeight: vert}]}>
@@ -148,7 +155,7 @@ return (
           <Text style={[styles.statusBar,{minHeight: 0.06*vert}]}></Text>
           <SafeAreaView style={[styles.top,{minHeight: 0.13*vert}]}>
           <View style={[{height:0.04*vert},{width:1*hor}]}>
-          <TouchableOpacity onPress={()=>{setShowFriends(true)}} style={styles.delete}><Text style={styles.btnsText}>MENU</Text></TouchableOpacity> 
+          <TouchableOpacity onPress={()=>{setMenu(!menu)}} style={styles.delete}><Text style={styles.btnsText}>MENU</Text></TouchableOpacity> 
           </View>
           <View style={[styles.tabs,{minHeight:0.1*vert}]}>
           <View style={tab==="left"?styles.tabLeftA:styles.tabLeft}>
@@ -181,7 +188,37 @@ return (
                       : <Right token={token} partys={partys} verify_token={verify_token}/>
                       
         }
-      
+        {menu && 
+        <View style={menu ?styles.menu :{height:0}}>
+            <View style={styles.optionTop}>
+              <TouchableOpacity onPress={()=>{setIsMuted(!isMuted)}}  style={styles.touchTop}> 
+              <View style={styles.image}>
+              {isMuted 
+                ?<ImageBackground resizeMode='stretch' style={{width:"100%",height:"100%"}} source={require("./assets/unmuted-trans.png")}></ImageBackground>
+                :<ImageBackground resizeMode='stretch' style={{width:"100%",height:"100%"}} source={require("./assets/muted-trans.png")}></ImageBackground>
+              }
+              </View>
+              <View style={styles.topText}>
+              {isMuted
+                ?<Text style={styles.muteText}>SOUND ON</Text>
+                :<Text style={styles.muteText}>SOUND OFF</Text>
+              }
+                </View>
+              </TouchableOpacity>
+            </View>                        
+            <View style={styles.optionMid}>
+              <TouchableOpacity onPress={()=>{setShowFriends(true),setMenu(false)}}>
+              <Text style={styles.optionText}>FRIENDLIST</Text> 
+              </TouchableOpacity>
+            </View>            
+            
+            <View style={styles.optionBot}>
+              <TouchableOpacity onPress={()=>{logout(),setMenu(false)}}>
+                 <Text style={styles.optionText}>LOGOUT</Text> 
+              </TouchableOpacity>
+            </View>
+           
+        </View>} 
          <StatusBar style="auto" />  
       
       
@@ -218,7 +255,100 @@ backgroundColor:"black",
     justifyContent: 'center',
     backgroundColor:'#ff0099'
   },
-
+  menu: {
+    height:"30%",
+    width:"50%",
+    position:'absolute',
+    top:"7.5%",
+    right:0,
+    // flexDirection:"column",
+    backgroundColor:'black',
+    borderRadius:20,
+    zIndex:3
+  },
+  // menuHid: {
+  //   height:"30%",
+  //   width:"50%",
+  //   position:'absolute',
+  //   top:"7.5%",
+  //   right:0,
+  //   flexDirection:"column",
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   backgroundColor:'#ff0099',
+  //   zIndex:3
+  // }, 
+  optionTop: {
+    position:"relative",
+    height:"33.3%",
+    width:"100%",
+    backgroundColor:'black',
+    borderBottomColor:"white",
+    borderBottomWidth:1,
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20
+  },
+  touchTop:{
+    borderTopLeftRadius:20,
+    borderTopRightRadius:20,
+    width:"100%",
+    height:"100%",
+    flexDirection:"row",
+    justifyContent:'flex-start',
+    alignContent:"center",
+  },
+  image:{
+    paddingTop:"10%",
+    width:"20%",
+    height:"80%",
+    textAlign:"center",
+    justifyContent:"center", 
+    borderTopLeftRadius:20,
+  
+  },
+  topText:{
+    width:"80%",
+    height:"100%",
+    textAlign:"center",
+    justifyContent:"center",
+    borderTopRightRadius:20,
+  },
+  muteText:{
+    width:"100%",
+    height:"50%",
+    color:"white",
+    fontSize:25,
+  },
+  optionText:{
+    paddingTop:"5%",
+    textAlign:"center",
+    width:"100%",
+    height:"80%",
+    color:"white",
+    fontSize:25,},
+  optionMid: {
+    position:"relative",
+    height:"33.3%",
+    width:"100%",
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'black',
+    borderBottomColor:"white",
+    borderBottomWidth:1
+  },
+  optionBot: {
+    position:"relative",
+    height:"33.3%",
+    width:"100%",
+    flex:1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'black',
+    borderBottomLeftRadius:20,
+    borderBottomRightRadius:20
+  },
+  
   statusBar:{
     flexDirection:"row",
     height:"5%",

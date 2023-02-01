@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity,TouchableWithoutFeedback,Dimensions, Alert } from 'react-native';
+import { StyleSheet, Text,TextInput, View, ScrollView,Image, TouchableOpacity,TouchableWithoutFeedback,Keyboard,Dimensions, Alert } from 'react-native';
 import { useState,useEffect} from 'react';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
@@ -15,11 +15,12 @@ export default function Left ({token,logout,verify_token}) {
     const [partys,setPartys]=useState([])
     const [invited,setInvited]=useState([])
     const [event,setEvent]=useState("")
+    const [eventId,setEventId]=useState("")
     const [todos,setTodos]=useState([])
     const [showFriends,setShowFriends]=useState(false)
-    const [choose,setChoose]=useState("")
+    const [newTask, setNewTask]= useState(false)
+    const [text,setText]=useState("")
     const URL = "http://192.168.0.174:4040"
-    
 
   const getEvents =async ()=>{
     let data =JWT.decode(token, JWT_SECRET);
@@ -39,7 +40,6 @@ export default function Left ({token,logout,verify_token}) {
     }).catch((error) => {
       console.log(error);
     })
-
   }
 
  useEffect(()=>{
@@ -89,13 +89,48 @@ export default function Left ({token,logout,verify_token}) {
         
          setTodos([...res.data.tasks])
          setEvent(event)
+         setEventId(event_id)
          setShowList(true)
       }
     }).catch((error) => {
       console.log(error);
     })
-
   }
+
+  const AddOne =()=>{
+    console.log(todos,eventId,text,event)
+    let data=JWT.decode(token, JWT_SECRET);
+    console.log(data,data._id)
+    console.log(todos,text)
+    if (text===""){
+      setNewTask(false)  
+    }else{
+  axios  
+   
+   .post(`${URL}/todos/add`, {
+    name:event,
+    user_id:data._id,
+    todos:[text],
+    _id:eventId,
+    version:"suggest"
+    })
+   .then((res) => {
+
+      if (res.data.ok) {
+        setTodos([...todos,{task:text,status:"suggested"}])
+        console.log(todos)
+        setNewTask(false)
+        setText("")
+
+        // let data=JWT.decode(token, JWT_SECRET);  
+        // console.log(" token after login:",data)
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    }) 
+  }   
+}  
 
 const changeStatus = async(event_id,event,choose)=>{
  let i= invited.findIndex(el=>el._id===event_id)
@@ -166,10 +201,11 @@ const changeStatus = async(event_id,event,choose)=>{
 const showTodos = () => {
     console.log(todos)
 return todos.map((todo, idx)=>{
-      return  <View style={styles.box} key={idx}>
+      return  <View style={todo.status==="done"?styles.done :todo.status==="booked" ?styles.booked :todo.status==="suggested" ?styles.suggested :styles.wait} key={idx}>
                   <Text
                     numberOfLines={1} 
-                    style={styles.task} >{todo.task}
+                    
+                    style={styles.task} >{todo.task} 
                   </Text>
                   <TouchableWithoutFeedback
                       onPress={( ) => removeTodo(idx)}>
@@ -190,10 +226,19 @@ return   showList && showFriends
             : showList
               ? <View style={styles.single}>
                     <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
+                    <View style={ newTask? styles.inputBox : styles.noBox}>
+                         <TextInput style={styles.input} placeholder="name of task" onChangeText={(text)=>setText(text)} value={text} ></TextInput>
+                         <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{Keyboard.dismiss();verify_token(); AddOne()}}>
+                         <View style={styles.makeTask} >
+                         
+                         <Image source={require("../assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
+                         </View>
+                         </TouchableWithoutFeedback>
+                    </View>
                     <View style={styles.singleText}><ScrollView style={styles.singleList}>{showTodos()}</ScrollView></View>
                     <View style={styles.listBtns}>
                           <TouchableOpacity onPress={()=>{setShowList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
-                          <TouchableOpacity onPress={()=>{}} style={styles.back}><Text style={styles.btnsText}>SUGGEST</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{setNewTask(true)}} style={styles.back}><Text style={styles.btnsText}>SUGGEST</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{logout()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                     </View> 
              </View>
@@ -229,12 +274,18 @@ text:{
     height:"100%",
     width:"100%",
     }, 
-box:{
+wait:{
       marginTop:5,marginHorizontal:3,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",},      
+suggested:{
+  marginTop:5,marginHorizontal:3,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"grey",},
+booked:{
+  marginTop:5,marginHorizontal:3,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"yellow",},
+done:{
+  marginTop:5,marginHorizontal:3,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#00cc00",},
 task:{
-        paddingTop:5,fontSize:16,width:"70%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",},
+      paddingTop:5,fontSize:16,width:"70%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,},                          
 delTask:{
-          textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:"30%",height:30,borderRadius:20,backgroundColor:"black",color:"white"},
+        textAlign:'center',marginTop:5,marginRight:5,fontSize:20,width:"30%",height:30,borderRadius:20,backgroundColor:"black",color:"white"},
 single:{
     paddingTop:40,
     backgroundColor:"#ff0000",
@@ -272,6 +323,45 @@ singleList:{
     marginTop:5,
     marginBottom:10,
    },
+   input :{
+    fontSize:16,
+    width:"85%",
+    paddingLeft:10 ,
+    borderRadius:20,
+    height:"100%",
+    backgroundColor:"#abb7b9",
+  },
+inputBox:{
+  position:'absolute',
+  top:"45%",
+  zIndex:2,
+  width:"100%",
+  height:"10%",
+  flexDirection:"row",
+  borderRadius:20,
+  backgroundColor:"#abb7b9",
+  justifyContent:"center"
+},
+noBox:{
+  height:0
+},
+makeTask:{
+  textAlign:'center',
+  justifyContent:"center",
+  marginTop:10,
+  marginRight:0,
+  fontSize:20,
+  width:"15%",
+  height:"70%",
+  borderRadius:30,
+  backgroundColor:"green",
+  color:"white"
+},
+buttonPic:{
+  width:"100%",
+  height:"100%",
+  borderRadius:30,
+},   
 listBtns:{
     justifyContent:"space-around",
     flexDirection:"row",
@@ -308,7 +398,7 @@ party:{
     justifyContent:"space-between",
     width:"100%",
     height:60,
-    backgroundColor:"green",
+    backgroundColor:"#00cc00",
     borderRadius:30,
   },
 waiting:{

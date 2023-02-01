@@ -382,8 +382,9 @@ const styles = StyleSheet.create({
     
   
     single:{
+        paddingHorizontal:10,
         paddingTop:30,
-        backgroundColor:"#ff0000",
+        backgroundColor:"yellow",
         position:'absolute',
         height:"100%",
         width:"100%",
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     text:{    
         textAlign: 'center',
         borderRadius:20,
-        backgroundColor:'#ff00eb',
+        backgroundColor:'blue',
         color: '#cdf104',
         fontSize:30,
         height:"100%",
@@ -403,14 +404,14 @@ const styles = StyleSheet.create({
         marginTop:5,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#ff0909",
     }, 
     selected:{
-      marginTop:5,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"green",
+      marginTop:5,marginHorizontal:10,flexDirection:"row",paddingLeft:10 ,borderRadius:20,height:40,backgroundColor:"#00cc00",
   },   
     taskBox:{width:"90%",height:40,}, 
     task:{
-        paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"#ff0909",
+        paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,
     },
     selTask:{
-      paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,backgroundColor:"green",
+      paddingTop:9,fontSize:16,width:"100%",color:"white",paddingLeft:3 ,borderRadius:30,height:40,
   },
     inputBox:{ 
         width:"100%",
@@ -486,7 +487,7 @@ const styles = StyleSheet.create({
       paddingLeft:"5%",
       width:"30%",
       height:"60%",
-      backgroundColor:"green",
+      backgroundColor:"#00cc00",
       borderRadius:15,
       justifyContent:"center",
       textAlign:'center'

@@ -4,7 +4,7 @@ const EventsModels = require("../models/EventsModels");
 class TodosCons {
 
 async add(req,res){
-      let {name,user_id,todos,_id}=req.body;
+      let {name,user_id,todos,_id,version}=req.body;
       console.log(name,user_id,todos,_id)
       var id=_id
       if (!name){
@@ -15,19 +15,23 @@ async add(req,res){
       }
       else{
       try{ 
-      if (!_id){
-      const party = await EventsModels.create({name,users:[{user_id,status:"invited"}]})
-      console.log(party)
-      id=party._id
-      }
-      
-      for (let i=0; i<todos.length; i++) {
-      
-      const task = await TodosModels.create({task:todos[i],event_id:id,status:"wait"})
-      console.log(task)
-      }
-       res.json({ok:true,id:id})
-      }
+        if (!_id){
+        const party = await EventsModels.create({name,users:[{user_id,status:"owner"}]})
+        console.log(party)
+        id=party._id
+        }
+        if(version==="make"){
+        for (let i=0; i<todos.length; i++) {      
+        const task = await TodosModels.create({task:todos[i],event_id:id,status:"wait"})
+        console.log(task)
+        }}
+        if(version==="suggest"){
+               
+          const task = await TodosModels.create({task:todos[0],event_id:id,status:"suggested",suggested:true})
+          console.log(task)
+          }
+        res.json({ok:true,id:id})
+        }
       catch (error) {
         console.log(error)
         return res.json({ error });

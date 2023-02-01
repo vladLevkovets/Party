@@ -56,7 +56,7 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink,setToken}) {
       console.log("newtoken", token)
       setToken(token)
     } catch (e) {
-      // saving error
+
     }
   }
 
@@ -80,12 +80,8 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink,setToken}) {
         .then((res) => {
   
           if (res.data.ok) {
-            // here after login was successful we extract the email passed from the server inside the token
-            // let data=JWT.decode(res.data.token, JWT_SECRET);
-            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
             console.log(
               " token after login:",res.data.token
-              // decodedToken.email
             );
             storeToken(res.data.token);
             setLogged(true) 
@@ -113,11 +109,6 @@ export default function Login({reg,setReg,setLogged,playMusic,Pink,setToken}) {
         .then((res) => {
           console.log(res);
           if (res.data.ok) {
-            // console.log(JWT_SECRET)
-            // var data=JWT.decode(res.data.token, {JWT_SECRET});
-            // and now we now which user is logged in in the client so we can manipulate it as we want, like fetching data for it or we can pass the user role -- admin or not -- and act accordingly, etc...
-            // console.log(
-            //   " token after login:",data)
             console.log("this is token", res.data.token)
             storeToken(res.data.token)
             setLogged(true)
