@@ -1,4 +1,5 @@
 const EventsModels = require("../models/EventsModels");
+const UsersModels = require("../models/UsersModels")
 
 
 class EventsCons {
@@ -55,13 +56,22 @@ class EventsCons {
 
 
     async findOne(req, res) {
-        console.log(req.params);
-        
+        console.log(req.params._id);
+        let members=[]
         try {
           console.log(req.params);
-          const user = await EventsModels.findOne(req.params);
-          res.json(user);
+          const event = await EventsModels.findOne(req.params);
+          for (let i=0;i<event.users.length;i++){
+          let user = await UsersModels.findOne({_id:event.users[i].user_id})
+          if (event.users[i].status !=="invited"){
+            members.push(user.nickname)
+          }
+          } 
+
+          res.json({ok:true,members});
+          console.log(event,members)
         } catch (error) {
+          console.log("error")
           res.json({ error });
         }
       }

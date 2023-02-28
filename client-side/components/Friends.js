@@ -265,7 +265,7 @@ const share=()=>{
           if (res.data.ok)
           getEvents()
           setShowFriends(false)
-          Alert.alert("Your invitation send")
+          Alert.alert("Your invitation sent")
           
          })
          .catch((error) => {
@@ -275,7 +275,7 @@ const share=()=>{
 return <View style={styles.single}>
   
        <View style={styles.inputBox}>
-       <TextInput style={styles.input} placeholder="find a friend" onChangeText={(text)=>setFind(text)} value={find} ></TextInput>
+       <TextInput style={styles.input} placeholder="Find a friend" onChangeText={(text)=>setFind(text)} value={find} ></TextInput>
        <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{findFriend()}}>
                          <View style={styles.makeTask} >
                          
@@ -301,7 +301,7 @@ return <View style={styles.single}>
         <View style={list?styles.listBtns :styles.oneBtn }>
         <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
         <TouchableOpacity onPress={()=>select()} style={list ?styles.mark :{width:0}}><Text style={styles.btnsText }>MARK ALL</Text></TouchableOpacity>
-        <TouchableOpacity onPress={()=>share()} style={list ?styles.sent :{width:0}}><Text style={styles.btnsText}>SENT TO</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>share()} style={list ?styles.sent :{width:0}}><Text style={styles.btnsText}>SEND TO</Text></TouchableOpacity>
         </View>
 
          {/* :<View style={styles.oneBtn}>

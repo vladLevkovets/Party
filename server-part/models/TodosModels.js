@@ -18,7 +18,7 @@ const TodoSchema=new Schema({
     done:{type:Boolean},
     doneBy:{type:String},
     voted:{type:Boolean},
-    votedBy:{type:Object},
+    votedBy:[{type:Object}],
     suggested:{type:Boolean},
  })
 

@@ -72,11 +72,13 @@ export default function Right ({token,verify_token,partys}) {
         setTodos([...temp])
         setText('')}
       }
+
     const removeTodo = (idx) => {
         const temp = [...todos]
         temp.splice(idx, 1)
         setTodos([...temp])
       }
+      
     const makeList=async ()=>{
         console.log(todos)
         let data=JWT.decode(token, JWT_SECRET);
@@ -92,6 +94,7 @@ export default function Right ({token,verify_token,partys}) {
         name: event,
         user_id:data._id,
         todos:todos,
+        version:"make"
         })
        .then((res) => {
   

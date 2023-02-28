@@ -9,7 +9,7 @@ const EventSchema=new Schema({
             ref:'users'
         },status:{type:String}}
     ],
-      
+    progress:{type:String,required:true}  
     },
     {strictQuery:false})
 
