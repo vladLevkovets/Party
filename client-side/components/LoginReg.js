@@ -1,11 +1,9 @@
 import React from "react"
-import  StatusBar  from 'expo-status-bar';
-import { StyleSheet, Text, View, Alert, TouchableWithoutFeedback, TextInput,Keyboard, ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions,KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableWithoutFeedback, TextInput,Keyboard, ImageBackground, TouchableOpacity,Dimensions,KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState,useEffect} from 'react';
 import axios from "axios";
-import JWT from 'expo-jwt';
-import JWT_SECRET from "../config.js"
+
 
 
 

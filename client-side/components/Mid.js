@@ -1,5 +1,5 @@
 import { StyleSheet, Text,TextInput, View, ScrollView,Image, TouchableOpacity,TouchableWithoutFeedback,Keyboard,Alert,RefreshControl } from 'react-native';
-import { useState,useEffect,useCallback} from 'react';
+import { useState,useEffect} from 'react';
 import JWT from 'expo-jwt';
 import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
@@ -9,7 +9,7 @@ import TaskOptions from "./TaskOptions.js"
 
 
 
-export default function Left ({token,logout,verify_token}) {
+export default function Left ({token,verify_token}) {
     const [showList,setShowList]=useState(false)
     const [part,setPart]=useState([])
     const [invited,setInvited]=useState([])
@@ -27,6 +27,7 @@ export default function Left ({token,logout,verify_token}) {
     const URL = "http://192.168.0.174:4040"
 
   const onRefresh = (() => {
+    verify_token(),
     console.log(eventId,event)
       makeTodos(eventId,event)
       setRefreshing(true);
@@ -64,10 +65,10 @@ export default function Left ({token,logout,verify_token}) {
 
 
     const showMy=()=>{
-    
+    console.log(part)
      return   part.map((el,i)=>{
                   
-              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{makeTodos(el._id,el.name),getMembers(el._id)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{el.progress}</Text></TouchableOpacity>
+              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{verify_token(),makeTodos(el._id,el.name),getMembers(el._id)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{el.progress}</Text></TouchableOpacity>
               })
               
     }
@@ -251,7 +252,7 @@ members.forEach(el=>{
   }
 )
 console.log(people)
-let all =people.join(",")
+let all =people.join(", ")
 
 return <Text style={styles.membersList}>{all}</Text>
 }
@@ -287,7 +288,7 @@ return ALL.map((todo)=>{
                   </View>
                   {!result &&
                   <TouchableWithoutFeedback style={{width:"100%",height:"100%",borderColor:"blue"}}
-                      onPress={( ) => voting(idx)}>
+                      onPress={( ) =>{verify_token(), voting(idx)}}>
                      <Text style={!result ?styles.vote :{width:0}}>Vote Yes</Text>                     
                   </TouchableWithoutFeedback> 
                   }
@@ -303,7 +304,7 @@ return ALL.map((todo)=>{
     })
   }
  
-  const voting = (idx) => {
+  const voting = async(idx) => {
     let data =JWT.decode(token, JWT_SECRET);
     let nickname=data.nickname
     let temp = [...todos]  
@@ -323,14 +324,49 @@ return ALL.map((todo)=>{
   })
   }
   
+const Delete =async()=>{
+  let data =JWT.decode(token, JWT_SECRET);
+  
+  axios
+  .post(`${URL}/events/update`, {
+    _id:eventId,
+    user_id:data._id,
+    version:"delete"})
+ 
+  .then ((res)=>{
+   if (res.data.ok){
+    let temp=[...part]
+    let i=part.findIndex(el=>el._id===eventId)
+    temp.splice(i,1)
+    setPart(prev=>prev=[...temp]) 
+      console.log("deleted",part)
+   }
+ 
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+}
 
-
+const alarm =async() =>{
+  
+  Alert.alert("Are you sure?", "Do you want leave the party ?",[{
+    text: "Yes",
+    onPress: () => {
+    verify_token(),  
+    Delete(),
+    setShowList(false)
+    }},
+    {
+      text: "No",
+    },]
+  )}
 
 return   showList && showFriends
         ? <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} />
              
             : showList && showItem
-              ? <TaskOptions token={token}  setShowItem={setShowItem}  item={item} setItem={setItem} makeTodos={makeTodos} event={event}/>
+              ? <TaskOptions token={token} verify_token={verify_token} setShowItem={setShowItem}  item={item} setItem={setItem} makeTodos={makeTodos} event={event}/>
               : showList 
                 ?<View style={styles.single}>
                     <View style={styles.singleTop}><Text style={styles.singleName}>{event}</Text></View> 
@@ -353,9 +389,9 @@ return   showList && showFriends
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>{showTodos()}</ScrollView>
                       </View>
                     <View style={styles.listBtns}>
-                          <TouchableOpacity onPress={()=>{setShowList(false);getEvents()}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{verify_token(),setShowList(false);getEvents()}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{setNewTask(true)}} style={styles.suggest}><Text style={styles.sugText}>SUGGEST</Text></TouchableOpacity> 
-                          <TouchableOpacity onPress={()=>{logout()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={()=>{alarm()}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                     </View> 
              </View>
 
@@ -489,7 +525,7 @@ members:{
     marginLeft:"5%", 
     width:"90%",
     height:"10%",  
-    backgroundColor:"white",
+    backgroundColor:"#66d9ff",
     borderRadius:20,
     extAlign:'center',
     ustifyContent:"center",

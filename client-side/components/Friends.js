@@ -19,7 +19,7 @@ const URL = "http://192.168.0.174:4040"
 const [newUserId,setNewUserId]=useState("")
 const [form,setForm]=useState([])
 
-console.log(partys)
+
 const getFriends= async  ()=>{
   
     let data =JWT.decode(token, JWT_SECRET);
@@ -161,6 +161,7 @@ const alarm =(idx) =>{
   Alert.alert("Are you sure?", "This action will remove your friend from list",[{
     text: "Yes",
     onPress: () => {
+    verify_token(),  
     removeFriend(idx)
     }},
     {
@@ -236,7 +237,9 @@ const friendList = () => {
   }
 
 useEffect(()=>{
+  
     if (showFriends ){
+    verify_token(),  
     getFriends()}
 },[showFriends]) 
 
@@ -276,7 +279,7 @@ return <View style={styles.single}>
   
        <View style={styles.inputBox}>
        <TextInput style={styles.input} placeholder="Find a friend" onChangeText={(text)=>setFind(text)} value={find} ></TextInput>
-       <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{findFriend()}}>
+       <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{verify_token(),findFriend()}}>
                          <View style={styles.makeTask} >
                          
                          <Image source={require("../assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
@@ -286,7 +289,7 @@ return <View style={styles.single}>
        
        <View style={prompt ?styles.prompt :{height:0}}>
        <TextInput style={prompt?styles.input :{width:0}} placeholder="Contact name" onChangeText={(text)=>setContact(text)} defaultValue={find} value={contact} ></TextInput>
-          <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{Keyboard.dismiss();addFriend()}}>
+          <TouchableWithoutFeedback title="V" style={styles.makeTask}  onPress={()=>{Keyboard.dismiss();verify_token(),addFriend()}}>
                          <View style={styles.makeTask} >
                          
                          <Image source={require("../assets/istockphoto-1191442137-170667a.jpg")} style={styles.buttonPic}/>
@@ -297,18 +300,14 @@ return <View style={styles.single}>
        <ScrollView style={styles.text}>
                 {friendList()}
         </ScrollView> 
-        {/* {list */}
+        
         <View style={list?styles.listBtns :styles.oneBtn }>
         <TouchableOpacity onPress={()=>{setShowFriends(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
         <TouchableOpacity onPress={()=>select()} style={list ?styles.mark :{width:0}}><Text style={styles.btnsText }>MARK ALL</Text></TouchableOpacity>
-        <TouchableOpacity onPress={()=>share()} style={list ?styles.sent :{width:0}}><Text style={styles.btnsText}>SEND TO</Text></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{verify_token(),share()}} style={list ?styles.sent :{width:0}}><Text style={styles.btnsText}>SEND TO</Text></TouchableOpacity>
         </View>
 
-         {/* :<View style={styles.oneBtn}>
-         <TouchableOpacity onPress={()=>{setShowFriendList(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
         
-         </View>
-        } */}
 
 
 

@@ -1,8 +1,6 @@
 import React from "react"
-import { useCallback } from 'react';
 import AppLoading from 'expo-app-loading';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, TextInput,ScrollView,Image,ImageBackground, TouchableOpacity,Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground,Dimensions } from 'react-native';
 import Screensaver from "../assets/acid-lsd-trip-crop.jpeg"
 import { useFonts } from 'expo-font';
 

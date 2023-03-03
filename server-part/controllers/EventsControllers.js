@@ -91,6 +91,7 @@ class EventsCons {
     }
 
     async update(req,res){
+      debugger
         let list=[]
        try {
         if(req.body.version==="add"){
@@ -99,6 +100,16 @@ class EventsCons {
         console.log(list)
         const send = await EventsModels.updateOne({_id:req.body._id},{users:list})
         console.log(send)
+        console.log(list)
+        res.json({ok:true})
+      }else if(req.body.version==="delete"){
+        const event= await EventsModels.findOne({_id:req.body._id})         
+        list=[...event.users]
+        console.log(list)
+        let i =list.findIndex(user=>user.user_id===req.body.user_id)
+        list.splice(i,1)
+        const left = await EventsModels.updateOne({_id:req.body._id},{users:list})
+        console.log(left)
         console.log(list)
         res.json({ok:true})
       }else if (req.body.version==="change"){

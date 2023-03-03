@@ -30,6 +30,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
 
     
     const onRefresh = (() => {
+      verify_token(),
       console.log(eventId,event)
         makeTodos(eventId,event)
         setRefreshing(true);
@@ -72,7 +73,7 @@ export default function Left ({token,verify_token,partys,setPartys}) {
   const showMy=()=>{
     
      return   partys.map((el,i)=>{
-              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{makeTodos(el._id,el.name),setList(true),getMembers(el._id)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{el.progress}</Text></TouchableOpacity>
+              return <TouchableOpacity key={i} style={styles.party} onPress={()=>{verify_token(),makeTodos(el._id,el.name),setList(true),getMembers(el._id)}}><Text style={styles.eventName}>{el.name}</Text><Text style={styles.eventProgress}>{el.progress}</Text></TouchableOpacity>
           })
     }
 
@@ -169,7 +170,7 @@ members.forEach(el=>{
   }
 )
 console.log(people)
-let all =people.join(",")
+let all =people.join(", ")
 
 return <Text style={styles.membersList}>{all}</Text>
 }
@@ -335,6 +336,7 @@ const alarm =(idx) =>{
   Alert.alert("Are you sure?", "This action will delete your party!",[{
     text: "Yes",
     onPress: () => {
+    verify_token(),  
     DelTasks()
     }},
     {
@@ -344,6 +346,7 @@ const alarm =(idx) =>{
     Alert.alert("Are you sure?", "This action will delete this task!",[{
       text: "Yes",
       onPress: () => {
+      verify_token(),  
       removeTodo(idx)
       }},
       {
@@ -357,7 +360,7 @@ return  showList && showFriends
         ? 
         <Friends token={token} verify_token={verify_token} showFriends={showFriends} setShowFriends={setShowFriends} list={list} setList={setList} eventId={eventId} partys={partys} getEvents={getEvents}/> 
         : showList && showItem
-              ? <TaskOptions token={token}  setShowItem={setShowItem} item={item} setItem={setItem} makeTodos={makeTodos} event={event}/>
+              ? <TaskOptions token={token} verify_token={verify_token} setShowItem={setShowItem} item={item} setItem={setItem} makeTodos={makeTodos} event={event}/>
         :showList 
              ? 
              <KeyboardAvoidingView style={styles.single} >
@@ -384,8 +387,8 @@ return  showList && showFriends
                     </View>
                     
                     <View style={styles.listBtns}>
-                          <TouchableOpacity onPress={()=>{setShowList(false);setNewTask(false);getEvents()}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
-                          <TouchableOpacity onPress={()=>{verify_token();setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
+                          <TouchableOpacity onPress={()=>{verify_token(),setShowList(false);setNewTask(false);getEvents()}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity>
+                          <TouchableOpacity onPress={()=>{setNewTask(true)}} style={styles.addOne}><Text style={styles.btnsText}>ADD ONE</Text></TouchableOpacity> 
                           <TouchableOpacity onPress={()=>{setShowFriends(true)}} style={styles.invite}><Text style={styles.btnsText}>INVITE</Text></TouchableOpacity>
                           <TouchableOpacity onPress={()=>{alarm("party")}} style={styles.delete}><Text style={styles.btnsText}>DELETE</Text></TouchableOpacity>
                           
@@ -532,14 +535,14 @@ members:{
   marginLeft:"5%", 
   width:"90%",
   height:"10%",  
-  backgroundColor:"white",
+  backgroundColor:"#66d9ff",
   borderRadius:20,
   extAlign:'center',
   ustifyContent:"center",
   },
 membersList:{
     color:"black",
-    fontSize:15,
+    fontSize:20,
     marginTop:0,
     marginLeft:"5%", 
     width:"90%",

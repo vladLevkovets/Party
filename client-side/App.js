@@ -12,8 +12,7 @@ import Friends from "./components/Friends.js"
 import axios from "axios";
 import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync()
-// import JWT from 'expo-jwt';
-// import {JWT_SECRET} from "./config.js"
+
 
 
 export default function App() {

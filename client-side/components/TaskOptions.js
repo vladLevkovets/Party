@@ -6,7 +6,7 @@ import {JWT_SECRET} from "../config.js"
 import axios from 'axios';
 
 
-export default function Task ({token,item,setItem,setShowItem,makeTodos,event}){
+export default function Task ({token,verify_token,item,setItem,setShowItem,makeTodos,event}){
 const URL = "http://192.168.0.174:4040"
 
 
@@ -91,10 +91,10 @@ return  <View style={item.status==="booked" ?styles.singleBooked :item.status===
         <View style={styles.listBtns}>           
             <TouchableOpacity onPress={()=>{setShowItem(false)}} style={styles.back}><Text style={styles.btnsText}>BACK</Text></TouchableOpacity> 
            {!item.booked && !item.done &&
-               <TouchableOpacity onPress={()=>{mark("booked")}} style={styles.book}><Text style={styles.bookText}>BOOK</Text></TouchableOpacity> 
+               <TouchableOpacity onPress={()=>{verify_token(),mark("booked")}} style={styles.book}><Text style={styles.bookText}>BOOK</Text></TouchableOpacity> 
            }
             {!item.done &&
-            <TouchableOpacity onPress={()=>{mark("done")}} style={styles.done}><Text style={styles.btnsText}>DONE</Text></TouchableOpacity>
+            <TouchableOpacity onPress={()=>{verify_token(),mark("done")}} style={styles.done}><Text style={styles.btnsText}>DONE</Text></TouchableOpacity>
             }
         </View> 
 </View>
