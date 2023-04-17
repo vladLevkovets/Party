@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "lets-party-started",
-    "slug": "lets-party-started",
+    "name": "A.C.I.D.",
+    "slug": "A.C.I.D.",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/acid-icon-big.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/butyfont.jpg",
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/acid-icon.png",
         "backgroundColor": "#FFFFFF",
         "softwareKeyboardLayoutMode": "pan"  
       }

@@ -8,9 +8,6 @@ const TodoSchema=new Schema({
         required:true,
         ref:'events'
     },
-    
-
-
     task:{type:String,required:true},
     status:{type:String},
     booked:{type:Boolean},
@@ -20,6 +17,6 @@ const TodoSchema=new Schema({
     voted:{type:Boolean},
     votedBy:[{type:Object}],
     suggested:{type:Boolean},
- })
+})
 
- module.exports= mongoose.model("todos",TodoSchema);
+module.exports= mongoose.model("todos",TodoSchema);

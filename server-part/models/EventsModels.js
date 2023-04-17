@@ -1,7 +1,7 @@
 const mongoose= require('mongoose');
 const Schema=mongoose.Schema;
-const EventSchema=new Schema({
-   
+const EventSchema=new Schema(
+  {   
     name:{type:String,required:true},
     users:[{user_id:{
             type:Schema.Types.ObjectId,
@@ -10,11 +10,8 @@ const EventSchema=new Schema({
         },status:{type:String}}
     ],
     progress:{type:String,required:true}  
-    },
-    {strictQuery:false})
-
-
-
-
+  },
+  {strictQuery:false}
+)
 
 module.exports= mongoose.model("events",EventSchema);
