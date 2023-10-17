@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "A.C.I.D.",
-    "slug": "A.C.I.D.",
+    "name": "A-C-I-D",
+    "slug": "A-C-I-D",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/acid-icon-big.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/butyfont.jpg",
+      "image": "./assets/butyfont.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,9 +22,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/acid-icon.png",
-        "backgroundColor": "#FFFFFF",
-        "softwareKeyboardLayoutMode": "pan"  
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+         
       }
     },
     "web": {
