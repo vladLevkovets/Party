@@ -532,8 +532,8 @@ members:{
     height:"10%",  
     backgroundColor:"#66d9ff",
     borderRadius:20,
-    extAlign:'center',
-    ustifyContent:"center"
+    textAlign:'center'
+    
   },
 membersList:{
     color:"black",
@@ -543,8 +543,7 @@ membersList:{
     width:"90%",
     height:"90%",  
     borderRadius:20,
-    extAlign:'center',
-    ustifyContent:"center"
+    justifyContent:"center"
   },
 input :{
     fontSize:16,

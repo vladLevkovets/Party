@@ -210,7 +210,7 @@ export default function Friends ({token,verify_token,showFriends,setShowFriends,
       return  friends.map((friend, idx)=>{
                 return  <View style={friend.status ?styles.selected :styles.box} key={idx}> 
                           <View style={styles.taskBox}>
-                            <TouchableOpacity onPress={()=>select(idx)}>
+                            <TouchableOpacity onPress={list ?()=>select(idx) :null}>
                               <Text numberOfLines={1} style={friend.status ?styles.selTask :styles.task} >{friend.name}</Text>
                             </TouchableOpacity>
                           </View>
